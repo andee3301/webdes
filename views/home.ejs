@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+<section class="hero text-center py-5">
+  <h1 class="display-4">Welcome to Aroma Bean Café</h1>
+  <p class="lead">
+    Freshly brewed beverages and baked delights, now available online.
+  </p>
+  <a class="btn btn-primary" href="#menu">Browse Menu</a>
+</section>
+
+<section id="menu" class="menu-section">
+  <% Object.keys(menu).forEach((category) => { %>
+  <div class="menu-category mb-5">
+    <h2 class="mb-3 text-capitalize"><%= category %></h2>
+    <div class="row g-3">
+      <% if (menu[category].length === 0) { %>
+      <p class="text-muted">
+        We are crafting new items for this section. Check back soon!
+      </p>
+      <% } %> <% menu[category].forEach((item) => { %>
+      <div class="col-md-4">
+        <div class="card h-100">
+          <% if (item.imageUrl) { %>
+          <img
+            src="<%= item.imageUrl %>"
+            class="card-img-top"
+            alt="<%= item.name %>"
+          />
+          <% } %>
+          <div class="card-body">
+            <h5 class="card-title"><%= item.name %></h5>
+            <p class="card-text">
+              <%= item.description || 'A signature treat crafted daily.' %>
+            </p>
+          </div>
+          <div
+            class="card-footer d-flex justify-content-between align-items-center"
+          >
+            <span class="fw-bold"
+              >$<%= parseFloat(item.price).toFixed(2) %></span
+            >
+            <button class="btn btn-outline-primary btn-sm" type="button">
+              Add to order
+            </button>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+  <% }); %>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,48 @@
+<%- include('../partials/header') %>
+<section class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h3">Admin · Menu Management</h1>
+    <p class="text-muted">
+      Add or update items that appear on the public menu.
+    </p>
+  </div>
+  <a class="btn btn-primary" href="/admin/add">Add new item</a>
+</section>
+
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Description</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (!items.length) { %>
+      <tr>
+        <td colspan="5" class="text-center text-muted">
+          No menu items yet. Start by adding one!
+        </td>
+      </tr>
+      <% } %> <% items.forEach((item) => { %>
+      <tr>
+        <td><strong><%= item.name %></strong></td>
+        <td class="text-capitalize"><%= item.category %></td>
+        <td>$<%= parseFloat(item.price).toFixed(2) %></td>
+        <td><%= item.description || '—' %></td>
+        <td>
+          <% if (item.isAvailable) { %>
+          <span class="badge bg-success">Available</span>
+          <% } else { %>
+          <span class="badge bg-secondary">Hidden</span>
+          <% } %>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/footer') %>

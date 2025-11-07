@@ -1,0 +1,23 @@
+body {
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f5f2;
+  color: #2f2c28;
+}
+
+.hero {
+  background: linear-gradient(120deg, #f7f5f2, #fff);
+}
+
+.menu-section .card {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-section .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+footer {
+  margin-top: auto;
+}
