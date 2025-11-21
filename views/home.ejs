@@ -1,52 +1,302 @@
 <%- include('partials/header') %>
-<section class="hero text-center py-5">
-  <h1 class="display-4">Welcome to Aroma Bean Café</h1>
-  <p class="lead">
-    Freshly brewed beverages and baked delights, now available online.
-  </p>
-  <a class="btn btn-primary" href="#menu">Browse Menu</a>
-</section>
-
-<section id="menu" class="menu-section">
-  <% Object.keys(menu).forEach((category) => { %>
-  <div class="menu-category mb-5">
-    <h2 class="mb-3 text-capitalize"><%= category %></h2>
-    <div class="row g-3">
-      <% if (menu[category].length === 0) { %>
-      <p class="text-muted">
-        We are crafting new items for this section. Check back soon!
-      </p>
-      <% } %> <% menu[category].forEach((item) => { %>
-      <div class="col-md-4">
-        <div class="card h-100">
-          <% if (item.imageUrl) { %>
-          <img
-            src="<%= item.imageUrl %>"
-            class="card-img-top"
-            alt="<%= item.name %>"
-          />
-          <% } %>
-          <div class="card-body">
-            <h5 class="card-title"><%= item.name %></h5>
-            <p class="card-text">
-              <%= item.description || 'A signature treat crafted daily.' %>
-            </p>
-          </div>
-          <div
-            class="card-footer d-flex justify-content-between align-items-center"
-          >
-            <span class="fw-bold"
-              >$<%= parseFloat(item.price).toFixed(2) %></span
-            >
-            <button class="btn btn-outline-primary btn-sm" type="button">
-              Add to order
-            </button>
-          </div>
-        </div>
+<section class="front-hero rounded-4 p-4 p-md-5 mb-5">
+  <div class="front-hero-copy">
+    <p class="hero-pill text-uppercase">Slow mornings, bright cups</p>
+    <h1 class="display-4 fw-semibold text-dark mb-3">
+      Roast profiles tuned for calm ritual.
+    </h1>
+    <p class="lead text-muted mb-4">
+      Single-origin coffees, teas, and small bakes profiled for clarity. Brew
+      notes, terroir stories, and pairing ideas ship with every bag.
+    </p>
+    <div class="d-flex flex-wrap gap-3 mb-4">
+      <a class="btn btn-primary px-4" href="/shop">Explore coffees</a>
+      <a class="btn btn-outline-secondary px-4" href="/journal"
+        >Read the journal</a
+      >
+    </div>
+    <div class="front-hero-stats">
+      <% heroStats.forEach((stat) => { %>
+      <div class="front-hero-stat">
+        <p class="label mb-1"><%= stat.label %></p>
+        <p class="metric mb-1"><%= stat.value %></p>
+        <p class="caption mb-0"><%= stat.caption %></p>
       </div>
       <% }); %>
     </div>
   </div>
-  <% }); %>
+  <div class="front-hero-figure">
+    <div class="hero-image-wrap">
+      <img
+        src="<%= sectionHighlights[0]?.heroImage || 'https://images.unsplash.com/photo-1471421298428-1513ab720a8e?auto=format&fit=crop&w=1200&q=80' %>"
+        alt="Roastery scene"
+      />
+      <div class="hero-highlight-card">
+        <% const featureCoffee = highlightCoffees && highlightCoffees.length ?
+        highlightCoffees[0] : null; %> <% if (featureCoffee) { %>
+        <p class="small text-uppercase text-muted mb-1">Featured lot</p>
+        <h3 class="h5 mb-1"><%= featureCoffee.name %></h3>
+        <p class="small text-muted mb-2"><%= featureCoffee.originBadge %></p>
+        <div class="note-chips">
+          <% featureCoffee.tagList.slice(0, 3).forEach((tag) => { %>
+          <span class="note-chip"
+            ><%= tag.replace(/\b\w/g, (c) => c.toUpperCase()) %></span
+          >
+          <% }); %>
+        </div>
+        <% } else { %>
+        <p class="small text-muted mb-2">Fresh coffees are loading.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mb-5">
+  <div class="section-heading mb-4">
+    <p class="eyebrow text-uppercase">From the shop</p>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+      <h2 class="h3 text-dark mb-0">Six coffees to start your ritual</h2>
+      <a class="btn btn-link" href="/shop">See all coffees</a>
+    </div>
+  </div>
+  <div class="row g-4">
+    <% if (featuredItems && featuredItems.length) { %>
+    <% featuredItems.forEach((coffee) => { %>
+    <div class="col-md-4">
+      <article class="coffee-card coffee-card--shop">
+        <% if (coffee.imageUrl) { %>
+        <div class="coffee-card-media">
+          <img src="<%= coffee.imageUrl %>" alt="<%= coffee.name %>" />
+          <span class="roast-chip"><%= coffee.displayRoast %></span>
+        </div>
+        <% } %>
+        <div class="coffee-card-body">
+          <div class="coffee-card-header">
+            <div>
+              <h3 class="h5 mb-1"><%= coffee.name %></h3>
+              <p class="flag-chip mb-0"><%= coffee.originBadge || 'Origin' %></p>
+            </div>
+            <span class="badge bg-light text-dark text-uppercase"><%= coffee.category || 'beans' %></span>
+          </div>
+          <div class="coffee-meta">
+            <div class="coffee-meta-block">
+              <p class="label mb-1">Cultivar</p>
+              <p class="mb-0 fw-semibold"><%= coffee.variety || 'Blend' %></p>
+            </div>
+            <div class="coffee-meta-block">
+              <p class="label mb-1">Altitude</p>
+              <p class="mb-0 fw-semibold"><%= coffee.elevation || '1,600m' %></p>
+            </div>
+            <div class="coffee-meta-block">
+              <p class="label mb-1">Process</p>
+              <p class="mb-0 fw-semibold"><%= coffee.process || 'Washed' %></p>
+            </div>
+          </div>
+          <% if (coffee.tags && coffee.tags.length) { %>
+          <div class="note-chips">
+            <% coffee.tags.slice(0, 4).forEach((tag) => { %>
+            <span class="note-chip"><%= tag %></span>
+            <% }); %>
+          </div>
+          <% } %>
+          <p class="text-muted mb-3"><%= coffee.description || 'Hand-roasted coffee designed for calm mornings.' %></p>
+          <div class="coffee-card-footer">
+            <div>
+              <p class="price mb-0">$<%= parseFloat(coffee.price).toFixed(2) %></p>
+              <small class="text-muted">250g bag</small>
+            </div>
+            <div class="coffee-card-actions">
+              <form action="/cart/add/<%= coffee.id %>" method="POST">
+                <input type="hidden" name="quantity" value="1" />
+                <button class="btn btn-primary btn-sm w-100" type="submit">Add to cart</button>
+              </form>
+              <a class="btn btn-outline-secondary btn-sm w-100" href="/menu/<%= coffee.id %>">Details</a>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+    <% }); %>
+    <% } else { %>
+    <div class="col-12">
+      <div class="preview-card">
+        <p class="mb-0">Fresh coffees are being profiled. Check back soon.</p>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</section>
+
+<section class="mb-5">
+  <div class="section-heading mb-4">
+    <p class="eyebrow text-uppercase">Spotlight coffees</p>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
+      <h2 class="h3 text-dark mb-0">Now roasting in the lab</h2>
+      <a class="btn btn-link" href="/shop">Shop the full menu</a>
+    </div>
+  </div>
+  <div class="row g-4">
+    <% if (highlightCoffees && highlightCoffees.length) { %> <%
+    highlightCoffees.forEach((coffee) => { %>
+    <div class="col-md-6">
+      <article class="coffee-card coffee-card--compact">
+        <div class="coffee-card-header">
+          <div>
+            <p class="small text-uppercase text-accent mb-1">
+              <%= coffee.displayRoast %>
+            </p>
+            <h3 class="h5 mb-1"><%= coffee.name %></h3>
+            <p class="flag-chip mb-0">
+              <%= coffee.originBadge || 'Direct trade' %>
+            </p>
+          </div>
+          <span class="badge bg-light text-dark text-uppercase">
+            <%= coffee.category || 'beans' %>
+          </span>
+        </div>
+        <div class="coffee-meta">
+          <div class="coffee-meta-block">
+            <p class="label mb-1">Cultivar</p>
+            <p class="mb-0 fw-semibold"><%= coffee.variety || 'Blend' %></p>
+          </div>
+          <div class="coffee-meta-block">
+            <p class="label mb-1">Altitude</p>
+            <p class="mb-0 fw-semibold"><%= coffee.elevation || '1,600m' %></p>
+          </div>
+          <div class="coffee-meta-block">
+            <p class="label mb-1">Process</p>
+            <p class="mb-0 fw-semibold"><%= coffee.process || 'Washed' %></p>
+          </div>
+        </div>
+          <% const tags = coffee.tags && coffee.tags.length ? coffee.tags : coffee.tagList; if (tags && tags.length) { %>
+          <div class="note-chips">
+            <% tags.slice(0, 4).forEach((tag) => { %>
+            <span class="note-chip"><%= tag %></span>
+            <% }); %>
+          </div>
+          <% } %>
+        <p class="text-muted mb-3">
+          <%= coffee.description || 'Hand-roasted daily for clarity and
+          sweetness.' %>
+        </p>
+        <div class="coffee-card-footer">
+          <div>
+            <p class="price mb-0">
+              $<%= parseFloat(coffee.price).toFixed(2) %>
+            </p>
+            <small class="text-muted">250g bag</small>
+          </div>
+          <div class="coffee-card-actions">
+            <form action="/cart/add/<%= coffee.id %>" method="POST">
+              <input type="hidden" name="quantity" value="1" />
+              <button class="btn btn-primary btn-sm w-100" type="submit">
+                Add to cart
+              </button>
+            </form>
+            <a
+              class="btn btn-outline-secondary btn-sm w-100"
+              href="/menu/<%= coffee.id %>"
+            >
+              Details
+            </a>
+            <% if (user) { %>
+            <form action="/wishlist/<%= coffee.id %>/add" method="POST">
+              <button class="btn btn-light btn-sm w-100" type="submit">
+                ♡ Wishlist
+              </button>
+            </form>
+            <% } else { %>
+            <a class="btn btn-link btn-sm w-100" href="/login">Login to save</a>
+            <% } %>
+          </div>
+        </div>
+      </article>
+    </div>
+    <% }); %> <% } else { %>
+    <div class="col-12">
+      <div class="preview-card">
+        <p class="mb-0">Fresh coffees are being profiled. Check back soon.</p>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</section>
+
+<section class="mb-5">
+  <div class="section-heading mb-4">
+    <p class="eyebrow text-uppercase">Collections</p>
+    <h2 class="h3 text-dark">Every category, carefully profiled</h2>
+  </div>
+  <div class="row g-4">
+    <% sectionHighlights.forEach((section) => { %>
+    <div class="col-md-6">
+      <article class="preview-card h-100">
+        <div class="preview-media">
+          <img src="<%= section.heroImage %>" alt="<%= section.title %>" />
+        </div>
+        <div class="preview-body">
+          <p class="eyebrow text-uppercase mb-2"><%= section.key %></p>
+          <h3 class="h4 text-dark mb-2"><%= section.title %></h3>
+          <p class="text-muted mb-3"><%= section.story %></p>
+          <div class="preview-items">
+            <% if (section.items && section.items.length) { %> <%
+            section.items.forEach((item) => { %>
+            <div class="preview-item">
+              <div>
+                <p class="fw-semibold mb-0"><%= item.name %></p>
+                <small class="text-muted">
+                  <%= item.description || 'Hand-roasted daily.' %>
+                </small>
+              </div>
+              <span class="price"
+                >$<%= parseFloat(item.price).toFixed(2) %></span
+              >
+            </div>
+            <% }); %> <% } else { %>
+            <p class="text-muted mb-0">Fresh releases are roasting now.</p>
+            <% } %>
+          </div>
+          <div class="d-flex gap-2 mt-3 flex-wrap">
+            <a class="btn btn-primary btn-sm" href="/shop#<%= section.key %>"
+              >Shop section</a
+            >
+            <a
+              class="btn btn-outline-secondary btn-sm"
+              href="/journal#<%= section.key %>-journal"
+              >Story</a
+            >
+          </div>
+        </div>
+      </article>
+    </div>
+    <% }); %>
+  </div>
+</section>
+
+<section class="journal-preview rounded-4 p-4 p-md-5 mb-5">
+  <div class="d-flex flex-column flex-lg-row justify-content-between gap-4">
+    <div>
+      <p class="eyebrow text-uppercase">Roastery journal</p>
+      <h2 class="h3 text-dark mb-3">Notes from the cupping table</h2>
+      <p class="text-muted mb-4">
+        Follow along as we document roast curves, producer visits, and pairing
+        ideas for each collection.
+      </p>
+      <a class="btn btn-primary" href="/journal">Read all entries</a>
+    </div>
+    <div class="journal-cards">
+      <% journalPreview.forEach((post) => { %>
+      <article class="journal-card">
+        <p class="small text-uppercase text-accent mb-1"><%= post.key %></p>
+        <h3 class="h5 mb-2"><%= post.title %></h3>
+        <p class="text-muted mb-3"><%= post.summary %></p>
+        <a class="btn btn-link p-0" href="/journal#<%= post.slug %>"
+          >Keep reading →</a
+        >
+      </article>
+      <% }); %>
+    </div>
+  </div>
 </section>
 <%- include('partials/footer') %>

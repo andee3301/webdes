@@ -1,0 +1,76 @@
+<%- include('../partials/header') %>
+<section class="page-hero gradient-panel rounded-4 p-4 p-md-5 mb-4">
+  <div class="row g-4 align-items-center">
+    <div class="col-lg-6">
+      <p class="eyebrow text-uppercase">Roastery journal</p>
+      <h1 class="display-5 fw-semibold text-dark mb-3">
+        Stories behind each roast
+      </h1>
+      <p class="text-muted mb-4">
+        Field notes from sourcing trips, cupping tables, and pairing
+        sessions—organized by the same sections you see in the shop.
+      </p>
+      <a class="btn btn-primary" href="/shop">Shop the latest drops</a>
+    </div>
+    <div class="col-lg-6">
+      <div class="journal-cards">
+        <% posts.slice(0, 3).forEach((post) => { %>
+        <article class="journal-card">
+          <p class="small text-uppercase text-accent mb-1"><%= post.key %></p>
+          <h3 class="h5 mb-2"><%= post.title %></h3>
+          <p class="text-muted mb-3"><%= post.summary %></p>
+          <a class="btn btn-link p-0" href="#<%= post.slug %>"
+            >Jump to entry →</a
+          >
+        </article>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="journal-list mb-5">
+  <% posts.forEach((post) => { %>
+  <article
+    id="<%= post.slug %>"
+    class="journal-entry rounded-4 p-4 p-md-5 mb-4"
+  >
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-5">
+        <div class="preview-media">
+          <img src="<%= post.heroImage %>" alt="<%= post.title %>" />
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <p class="eyebrow text-uppercase mb-2"><%= post.key %></p>
+        <h2 class="h4 text-dark mb-2"><%= post.title %></h2>
+        <p class="text-muted mb-3"><%= post.summary %></p>
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <p class="label mb-1">Origin</p>
+            <p class="fw-semibold mb-0"><%= post.origin %></p>
+          </div>
+          <div class="col-sm-6">
+            <p class="label mb-1">Brew cue</p>
+            <p class="fw-semibold mb-0"><%= post.brewTips %></p>
+          </div>
+        </div>
+        <div class="mb-3">
+          <p class="label mb-2">Tasting notes</p>
+          <div class="badge-group">
+            <% post.tastingNotes.forEach((note) => { %>
+            <span class="badge bg-light text-dark"> <%= note %> </span>
+            <% }); %>
+          </div>
+        </div>
+        <div class="journal-body">
+          <% post.body.forEach((paragraph) => { %>
+          <p class="text-muted"><%= paragraph %></p>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+  </article>
+  <% }); %>
+</section>
+<%- include('../partials/footer') %>

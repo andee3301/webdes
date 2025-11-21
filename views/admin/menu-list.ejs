@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+<section class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-0">Menu items</h1>
+    <p class="text-muted mb-0">Update the products available on the storefront.</p>
+  </div>
+  <a class="btn btn-primary" href="/admin/menu-items/new">Add item</a>
+</section>
+
+<div class="table-responsive shadow-sm">
+  <table class="table table-striped align-middle mb-0">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (!items.length) { %>
+      <tr>
+        <td colspan="5" class="text-center text-muted">No menu items yet.</td>
+      </tr>
+      <% } %> <% items.forEach((item) => { %>
+      <tr>
+        <td><%= item.name %></td>
+        <td class="text-capitalize"><%= item.category || '—' %></td>
+        <td>$<%= parseFloat(item.price).toFixed(2) %></td>
+        <td>
+          <% if (item.isAvailable) { %>
+          <span class="badge bg-success">Available</span>
+          <% } else { %>
+          <span class="badge bg-secondary">Hidden</span>
+          <% } %>
+        </td>
+        <td class="text-end">
+          <a class="btn btn-sm btn-outline-primary" href="/admin/menu-items/<%= item.id %>/edit">Edit</a>
+          <form action="/admin/menu-items/<%= item.id %>/delete" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/footer') %>

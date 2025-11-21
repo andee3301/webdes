@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+<section>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1 class="h4 mb-0">My orders</h1>
+      <p class="text-muted mb-0">Track your coffee deliveries.</p>
+    </div>
+  </div>
+  <% if (!orders.length) { %>
+  <div class="alert alert-light border">No orders yet. Grab something from the menu!</div>
+  <% } else { %>
+  <div class="table-responsive shadow-sm">
+    <table class="table table-striped align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Placed</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach((order) => { %>
+        <tr>
+          <td>#<%= order.id %></td>
+          <td><span class="badge bg-secondary text-uppercase"><%= order.status %></span></td>
+          <td>$<%= parseFloat(order.totalPrice).toFixed(2) %></td>
+          <td><%= new Date(order.createdAt).toLocaleString() %></td>
+          <td><a class="btn btn-sm btn-outline-primary" href="/orders/<%= order.id %>">Details</a></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</section>
+<%- include('../partials/footer') %>

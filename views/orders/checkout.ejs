@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+<section class="row g-4">
+  <div class="col-lg-7">
+    <h1 class="h4 mb-3">Checkout</h1>
+    <form action="/checkout" method="POST" class="card card-body shadow-sm">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Full name</label>
+          <input class="form-control" type="text" name="shippingName" required />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone</label>
+          <input class="form-control" type="text" name="shippingPhone" required />
+        </div>
+        <div class="col-12">
+          <label class="form-label">Address</label>
+          <input class="form-control" type="text" name="shippingAddress" required />
+        </div>
+        <div class="col-12">
+          <label class="form-label">Notes (optional)</label>
+          <textarea class="form-control" name="notes" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="mt-3 d-flex justify-content-end">
+        <button class="btn btn-primary" type="submit">Pay & view invoice</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5">Order summary</h2>
+        <ul class="list-group list-group-flush">
+          <% cart.forEach((item) => { %>
+          <li class="list-group-item d-flex justify-content-between">
+            <span><%= item.name %> × <%= item.quantity %></span>
+            <strong>$<%= (item.quantity * item.price).toFixed(2) %></strong>
+          </li>
+          <% }); %>
+        </ul>
+        <div class="d-flex justify-content-between mt-3">
+          <span>Total</span>
+          <strong>$<%= total.toFixed(2) %></strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../partials/footer') %>

@@ -2,3 +2,13 @@ node_modules/
 .env
 npm-debug.log*
 .DS_Store
+
+# AI / coding-agent artifacts
+.cursor/
+.cursorrules
+.windsurfrules
+.clinerules
+.ai/
+.copilot/
+copilot.log
+.env.example

@@ -1,0 +1,83 @@
+<%- include('partials/header') %>
+<section class="page-hero gradient-panel rounded-4 p-4 p-md-5 mb-4">
+  <div class="row g-4 align-items-center">
+    <div class="col-lg-6">
+      <p class="eyebrow text-uppercase">About the roastery</p>
+      <h1 class="display-5 fw-semibold text-dark mb-3">
+        Craft as daily ritual
+      </h1>
+      <p class="text-muted mb-4">
+        Andy Roasting Co. is a calm, confident roastery built around small-batch
+        precision, transparent sourcing, and everyday hospitality.
+      </p>
+      <div class="d-flex gap-3 flex-wrap">
+        <a class="btn btn-primary" href="/shop">Browse coffees</a>
+        <a class="btn btn-outline-secondary" href="/journal">Read journal</a>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="preview-media rounded-4 overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1572232055034-ef36b5d31364?auto=format&fit=crop&w=1400&q=80"
+          alt="Roaster at work"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="value-grid rounded-4 p-4 p-md-5 mb-4">
+  <div class="row g-4">
+    <% studioValues.forEach((value) => { %>
+    <div class="col-md-4">
+      <div class="value-card h-100">
+        <p class="eyebrow text-uppercase mb-1"><%= value.title %></p>
+        <p class="text-muted mb-0"><%= value.detail %></p>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+</section>
+
+<section class="timeline rounded-4 p-4 p-md-5 mb-4">
+  <p class="eyebrow text-uppercase">Timeline</p>
+  <h2 class="h4 text-dark mb-4">Moments that shaped our roast style</h2>
+  <div class="timeline-list">
+    <% timeline.forEach((entry) => { %>
+    <div class="timeline-item">
+      <div class="timeline-year"><%= entry.year %></div>
+      <div>
+        <p class="fw-semibold mb-1"><%= entry.title %></p>
+        <p class="text-muted mb-0"><%= entry.note %></p>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+</section>
+
+<section class="mb-5">
+  <div
+    class="section-heading mb-4 d-flex flex-wrap justify-content-between align-items-end gap-3"
+  >
+    <div>
+      <p class="eyebrow text-uppercase">From the journal</p>
+      <h2 class="h4 text-dark mb-0">Featured roast stories</h2>
+    </div>
+    <a class="btn btn-link" href="/journal">See all entries</a>
+  </div>
+  <div class="row g-4">
+    <% featuredStories.forEach((post) => { %>
+    <div class="col-md-4">
+      <article class="journal-card h-100">
+        <p class="small text-uppercase text-accent mb-1"><%= post.key %></p>
+        <h3 class="h5 mb-2"><%= post.title %></h3>
+        <p class="text-muted mb-3"><%= post.summary %></p>
+        <a class="btn btn-link p-0" href="/journal#<%= post.slug %>"
+          >Read story →</a
+        >
+      </article>
+    </div>
+    <% }); %>
+  </div>
+</section>
+<%- include('partials/footer') %>

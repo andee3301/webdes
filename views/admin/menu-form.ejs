@@ -1,0 +1,162 @@
+<%- include('../partials/header') %>
+<section class="mb-4">
+  <h1 class="h4"><%= item ? 'Edit item' : 'Add menu item' %></h1>
+  <p class="text-muted">
+    Images can be URLs for now; upload support can be added later.
+  </p>
+</section>
+
+<form
+  action="<%= item ? '/admin/menu-items/' + item.id : '/admin/menu-items' %>"
+  method="POST"
+  class="row g-3"
+>
+  <div class="col-md-6">
+    <label class="form-label">Name</label>
+    <input
+      class="form-control"
+      type="text"
+      name="name"
+      value="<%= item?.name || '' %>"
+      required
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Category</label>
+    <input
+      class="form-control"
+      type="text"
+      name="category"
+      placeholder="coffee, tea, bakery..."
+      value="<%= item?.category || '' %>"
+      required
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Price</label>
+    <input
+      class="form-control"
+      type="number"
+      name="price"
+      min="0"
+      step="0.01"
+      value="<%= item?.price || '' %>"
+      required
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Image URL</label>
+    <input
+      class="form-control"
+      type="url"
+      name="imageUrl"
+      value="<%= item?.imageUrl || '' %>"
+    />
+  </div>
+  <div class="col-12">
+    <label class="form-label">Description</label>
+    <textarea class="form-control" name="description" rows="3">
+<%= item?.description || '' %></textarea
+    >
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Origin country</label>
+    <input
+      class="form-control"
+      type="text"
+      name="originCountry"
+      value="<%= item?.originCountry || '' %>"
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Flag emoji / ISO code</label>
+    <input
+      class="form-control"
+      type="text"
+      name="originFlag"
+      value="<%= item?.originFlag || '' %>"
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Region</label>
+    <input
+      class="form-control"
+      type="text"
+      name="region"
+      value="<%= item?.region || '' %>"
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Process</label>
+    <input
+      class="form-control"
+      type="text"
+      name="process"
+      value="<%= item?.process || '' %>"
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Variety</label>
+    <input
+      class="form-control"
+      type="text"
+      name="variety"
+      value="<%= item?.variety || '' %>"
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Elevation</label>
+    <input
+      class="form-control"
+      type="text"
+      name="elevation"
+      placeholder="e.g. 1800 masl"
+      value="<%= item?.elevation || '' %>"
+    />
+  </div>
+  <div class="col-12">
+    <label class="form-label">Tasting notes</label>
+    <input
+      class="form-control"
+      type="text"
+      name="tastingNotes"
+      placeholder="Separate notes with |"
+      value="<%= item?.tastingNotes || '' %>"
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Roast level</label>
+    <input
+      class="form-control"
+      type="text"
+      name="roastLevel"
+      placeholder="Light, Medium, etc."
+      value="<%= item?.roastLevel || '' %>"
+    />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Flavor tags</label>
+    <input
+      class="form-control"
+      type="text"
+      name="flavorTags"
+      placeholder="caramel|citrus|floral"
+      value="<%= item?.flavorTags || '' %>"
+    />
+  </div>
+  <div class="col-12 form-check">
+    <input class="form-check-input" type="checkbox" name="isAvailable"
+    id="isAvailable" <%= item ? (item.isAvailable ? 'checked' : '') : 'checked'
+    %> />
+    <label class="form-check-label" for="isAvailable"
+      >Available on storefront</label
+    >
+  </div>
+  <div class="col-12 d-flex gap-2">
+    <button class="btn btn-primary" type="submit">
+      <%= item ? 'Save changes' : 'Create item' %>
+    </button>
+    <a class="btn btn-secondary" href="/admin/menu-items">Cancel</a>
+  </div>
+</form>
+<%- include('../partials/footer') %>

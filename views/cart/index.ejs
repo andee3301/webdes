@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+<section class="row g-4">
+  <div class="col-lg-8">
+    <h1 class="h4 mb-3">Your cart</h1>
+    <% if (!cart.length) { %>
+    <div class="alert alert-light border">Your cart is empty.</div>
+    <% } else { %>
+    <div class="list-group shadow-sm">
+      <% cart.forEach((item) => { %>
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="mb-1"><%= item.name %></h6>
+            <small class="text-muted">$<%= parseFloat(item.price).toFixed(2) %> each</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <form action="/cart/update/<%= item.menuItemId %>" method="POST" class="d-flex align-items-center gap-2">
+              <input
+                class="form-control"
+                style="width: 90px"
+                type="number"
+                name="quantity"
+                min="1"
+                value="<%= item.quantity %>"
+              />
+              <button class="btn btn-outline-secondary btn-sm" type="submit">Update</button>
+            </form>
+            <form action="/cart/remove/<%= item.menuItemId %>" method="POST">
+              <button class="btn btn-outline-danger btn-sm" type="submit">Remove</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% } %>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5">Summary</h2>
+        <p class="d-flex justify-content-between">
+          <span>Subtotal</span>
+          <strong>$<%= total.toFixed(2) %></strong>
+        </p>
+        <p class="text-muted small mb-3">Shipping is calculated after checkout.</p>
+        <a class="btn btn-primary w-100 <%= cart.length ? '' : 'disabled' %>" href="/checkout">Proceed to checkout</a>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../partials/footer') %>

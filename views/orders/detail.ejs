@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+<section class="row g-4">
+  <div class="col-lg-7">
+    <h1 class="h4 mb-1">Invoice</h1>
+    <p class="text-muted mb-3">Order #<%= order.id %></p>
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <p class="mb-1"><strong>Status:</strong> <span class="badge bg-secondary text-uppercase"><%= order.status %></span></p>
+        <p class="mb-1"><strong>Placed:</strong> <%= new Date(order.createdAt).toLocaleString() %></p>
+        <p class="mb-1"><strong>Name:</strong> <%= order.shippingName %></p>
+        <p class="mb-1"><strong>Phone:</strong> <%= order.shippingPhone %></p>
+        <p class="mb-1"><strong>Address:</strong> <%= order.shippingAddress %></p>
+        <% if (order.notes) { %>
+        <p class="mb-0"><strong>Notes:</strong> <%= order.notes %></p>
+        <% } %>
+        <div class="d-flex justify-content-end mt-3">
+          <button class="btn btn-outline-secondary btn-sm" type="button" onclick="window.print()">Print / Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5">Items</h2>
+        <ul class="list-group list-group-flush">
+          <% order.items.forEach((item) => { %>
+          <li class="list-group-item d-flex justify-content-between">
+            <span><%= item.menuItem?.name %> × <%= item.quantity %></span>
+            <span>$<%= Number(item.subtotal).toFixed(2) %></span>
+          </li>
+          <% }); %>
+        </ul>
+        <div class="d-flex justify-content-between mt-3">
+          <span>Total</span>
+          <strong>$<%= Number(order.totalPrice).toFixed(2) %></strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('../partials/footer') %>
