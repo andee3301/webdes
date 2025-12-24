@@ -1,17 +1,65 @@
-const { Op, fn, col } = require('sequelize');
+const { Op, fn, col, literal } = require('sequelize');
+const sequelize = require('../config/database');
 const { MenuItem, Order, OrderItem, User, Review } = require('../models');
 const { addFlash } = require('../utils/flash');
 
 exports.dashboard = async (req, res) => {
-  const startOfDay = new Date();
+  const now = new Date();
+  const startOfDay = new Date(now);
   startOfDay.setHours(0, 0, 0, 0);
+  
+  const startOfYesterday = new Date(startOfDay);
+  startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+  
+  const startOfWeek = new Date(startOfDay);
+  startOfWeek.setDate(startOfWeek.getDate() - 7);
+  
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
+  // Today's stats
   const ordersToday = await Order.count({ where: { createdAt: { [Op.gte]: startOfDay } } });
   const revenueToday =
     (await Order.sum('totalPrice', {
       where: { createdAt: { [Op.gte]: startOfDay }, status: { [Op.not]: 'cancelled' } },
     })) || 0;
+  
+  // Yesterday's stats for comparison
+  const ordersYesterday = await Order.count({ 
+    where: { createdAt: { [Op.gte]: startOfYesterday, [Op.lt]: startOfDay } } 
+  });
+  const revenueYesterday =
+    (await Order.sum('totalPrice', {
+      where: { createdAt: { [Op.gte]: startOfYesterday, [Op.lt]: startOfDay }, status: { [Op.not]: 'cancelled' } },
+    })) || 0;
+
+  // This month stats
+  const ordersThisMonth = await Order.count({ where: { createdAt: { [Op.gte]: startOfMonth } } });
+  const revenueThisMonth =
+    (await Order.sum('totalPrice', {
+      where: { createdAt: { [Op.gte]: startOfMonth }, status: { [Op.not]: 'cancelled' } },
+    })) || 0;
+
+  // Last month stats for comparison
+  const ordersLastMonth = await Order.count({ 
+    where: { createdAt: { [Op.gte]: startOfLastMonth, [Op.lte]: endOfLastMonth } } 
+  });
+  const revenueLastMonth =
+    (await Order.sum('totalPrice', {
+      where: { createdAt: { [Op.gte]: startOfLastMonth, [Op.lte]: endOfLastMonth }, status: { [Op.not]: 'cancelled' } },
+    })) || 0;
+
+  // Average order value
+  const avgOrderValue = ordersThisMonth > 0 ? revenueThisMonth / ordersThisMonth : 0;
+  const avgOrderValueLastMonth = ordersLastMonth > 0 ? revenueLastMonth / ordersLastMonth : 0;
+
   const userCount = await User.count();
+  const menuItemCount = await MenuItem.count();
+  const lowStockCount = await MenuItem.count({ where: { stock: { [Op.lt]: 10, [Op.gt]: 0 } } });
+  const outOfStockCount = await MenuItem.count({ where: { stock: 0 } });
+
+  // Status counts
   const statusCountsRaw = await Order.findAll({
     attributes: ['status', [fn('COUNT', col('status')), 'count']],
     group: ['status'],
@@ -22,12 +70,77 @@ exports.dashboard = async (req, res) => {
     return acc;
   }, {});
 
+  // Revenue by day (last 7 days) for chart
+  const revenueByDay = await Order.findAll({
+    attributes: [
+      [fn('DATE', col('createdAt')), 'date'],
+      [fn('SUM', col('totalPrice')), 'revenue'],
+      [fn('COUNT', col('id')), 'orders']
+    ],
+    where: { 
+      createdAt: { [Op.gte]: startOfWeek },
+      status: { [Op.not]: 'cancelled' }
+    },
+    group: [fn('DATE', col('createdAt'))],
+    order: [[fn('DATE', col('createdAt')), 'ASC']],
+    raw: true,
+  });
+
+  // Top selling products (this month)
+  const topProducts = await OrderItem.findAll({
+    attributes: [
+      'menuItemId',
+      [fn('SUM', col('quantity')), 'totalQty'],
+      [fn('SUM', col('subtotal')), 'totalRevenue']
+    ],
+    include: [{
+      model: MenuItem,
+      as: 'menuItem',
+      attributes: ['id', 'name', 'category', 'imageUrl', 'originCountry', 'originFlag']
+    }],
+    where: {
+      createdAt: { [Op.gte]: startOfMonth }
+    },
+    group: ['menuItemId', 'menuItem.id'],
+    order: [[fn('SUM', col('quantity')), 'DESC']],
+    limit: 5,
+    raw: false,
+  });
+
+  // Recent orders
+  const recentOrders = await Order.findAll({
+    include: [
+      { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
+      { model: OrderItem, as: 'items', include: [{ model: MenuItem, as: 'menuItem', attributes: ['id', 'name'] }] },
+    ],
+    order: [['createdAt', 'DESC']],
+    limit: 5,
+  });
+
   res.render('admin/dashboard', {
-    pageTitle: 'Admin dashboard',
+    pageTitle: 'Admin Dashboard',
+    // Today stats
     ordersToday,
     revenueToday,
+    ordersYesterday,
+    revenueYesterday,
+    // Monthly stats
+    ordersThisMonth,
+    revenueThisMonth,
+    ordersLastMonth,
+    revenueLastMonth,
+    avgOrderValue,
+    avgOrderValueLastMonth,
+    // Inventory
     userCount,
+    menuItemCount,
+    lowStockCount,
+    outOfStockCount,
+    // Charts data
     statusCounts,
+    revenueByDay: JSON.stringify(revenueByDay),
+    topProducts,
+    recentOrders,
   });
 };
 
@@ -163,6 +276,34 @@ exports.deleteMenuItem = async (req, res) => {
   } catch (error) {
     console.error('Delete menu item error', error);
     addFlash(req, 'error', 'Unable to delete menu item.');
+  }
+  res.redirect('/admin/menu-items');
+};
+
+// Quick update for stock and image URL (inline editing)
+exports.quickUpdateMenuItem = async (req, res) => {
+  const { id } = req.params;
+  const { stock, imageUrl } = req.body;
+  try {
+    const item = await MenuItem.findByPk(id);
+    if (!item) {
+      addFlash(req, 'error', 'Menu item not found.');
+      return res.redirect('/admin/menu-items');
+    }
+    const updates = {};
+    if (stock !== undefined && stock !== '') {
+      updates.stock = parseInt(stock, 10);
+    } else if (stock === '') {
+      updates.stock = null; // unlimited
+    }
+    if (imageUrl !== undefined) {
+      updates.imageUrl = imageUrl;
+    }
+    await item.update(updates);
+    addFlash(req, 'success', `${item.name} updated successfully.`);
+  } catch (error) {
+    console.error('Quick update menu item error', error);
+    addFlash(req, 'error', 'Unable to update menu item.');
   }
   res.redirect('/admin/menu-items');
 };

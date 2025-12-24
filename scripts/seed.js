@@ -1,7 +1,7 @@
 const path = require('path');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
-const { sequelize, MenuItem, User } = require('../models');
+const { sequelize, MenuItem, User, Order, OrderItem } = require('../models');
 
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
@@ -460,22 +460,128 @@ const preparedBeans = beans.map((bean) => ({
 const seed = async () => {
   try {
     await sequelize.sync({ force: true });
-    await MenuItem.bulkCreate(preparedBeans, { validate: true });
+    const menuItems = await MenuItem.bulkCreate(preparedBeans, { validate: true });
     const adminPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'Admin123!', 10);
-    await User.create({
+    const admin = await User.create({
       name: 'Admin',
       email: process.env.ADMIN_EMAIL || 'admin@example.com',
       passwordHash: adminPassword,
       role: 'admin',
     });
     const userPassword = await bcrypt.hash('1234', 10);
-    await User.create({
+    const customer = await User.create({
       name: 'User',
       email: 'user@123.com',
       passwordHash: userPassword,
       role: 'customer',
     });
-    console.log(`✅ Seeded ${preparedBeans.length} specialty coffees, an admin user, and a regular user.`);
+
+    // Create sample customers for demo orders
+    const sampleCustomers = [];
+    const customerNames = [
+      { name: 'Sarah Johnson', email: 'sarah.j@email.com' },
+      { name: 'Michael Chen', email: 'mchen@email.com' },
+      { name: 'Emily Davis', email: 'emily.d@email.com' },
+      { name: 'James Wilson', email: 'jwilson@email.com' },
+      { name: 'Olivia Martinez', email: 'olivia.m@email.com' },
+    ];
+    for (const cust of customerNames) {
+      const pw = await bcrypt.hash('demo1234', 10);
+      const u = await User.create({ ...cust, passwordHash: pw, role: 'customer' });
+      sampleCustomers.push(u);
+    }
+
+    // Sample addresses
+    const addresses = [
+      '123 Coffee Lane, Portland, OR 97201',
+      '456 Brew Street, Seattle, WA 98101',
+      '789 Roast Ave, San Francisco, CA 94102',
+      '321 Espresso Blvd, Los Angeles, CA 90012',
+      '654 Latte Way, Austin, TX 78701',
+    ];
+
+    // Order statuses
+    const statuses = ['pending', 'confirmed', 'shipped', 'completed', 'cancelled'];
+
+    // Create orders across the last 30 days
+    const orders = [];
+    const now = new Date();
+    for (let dayOffset = 0; dayOffset < 30; dayOffset++) {
+      // 1–4 orders per day
+      const ordersToday = Math.floor(Math.random() * 4) + 1;
+      for (let o = 0; o < ordersToday; o++) {
+        const orderDate = new Date(now);
+        orderDate.setDate(now.getDate() - dayOffset);
+        orderDate.setHours(Math.floor(Math.random() * 12) + 8);
+        orderDate.setMinutes(Math.floor(Math.random() * 60));
+
+        const cust = sampleCustomers[Math.floor(Math.random() * sampleCustomers.length)];
+        const addr = addresses[Math.floor(Math.random() * addresses.length)];
+
+        // Older orders more likely to be completed
+        let status;
+        if (dayOffset > 14) {
+          status = Math.random() < 0.8 ? 'completed' : 'cancelled';
+        } else if (dayOffset > 7) {
+          status = ['shipped', 'completed'][Math.floor(Math.random() * 2)];
+        } else if (dayOffset > 2) {
+          status = ['confirmed', 'shipped'][Math.floor(Math.random() * 2)];
+        } else {
+          status = ['pending', 'confirmed'][Math.floor(Math.random() * 2)];
+        }
+
+        // Random 1–4 items
+        const itemCount = Math.floor(Math.random() * 4) + 1;
+        const chosenItems = [];
+        const usedIds = new Set();
+        for (let i = 0; i < itemCount; i++) {
+          let item;
+          do {
+            item = menuItems[Math.floor(Math.random() * menuItems.length)];
+          } while (usedIds.has(item.id));
+          usedIds.add(item.id);
+          chosenItems.push({
+            menuItem: item,
+            quantity: Math.floor(Math.random() * 3) + 1,
+            price: item.price,
+          });
+        }
+
+        const total = chosenItems.reduce((sum, ci) => sum + ci.price * ci.quantity, 0);
+
+        orders.push({
+          userId: cust.id,
+          status,
+          total,
+          shippingAddress: addr,
+          createdAt: orderDate,
+          updatedAt: orderDate,
+          items: chosenItems,
+        });
+      }
+    }
+
+    // Persist orders and order items
+    for (const ord of orders) {
+      const order = await Order.create({
+        userId: ord.userId,
+        status: ord.status,
+        total: ord.total,
+        shippingAddress: ord.shippingAddress,
+        createdAt: ord.createdAt,
+        updatedAt: ord.updatedAt,
+      });
+      for (const item of ord.items) {
+        await OrderItem.create({
+          orderId: order.id,
+          menuItemId: item.menuItem.id,
+          quantity: item.quantity,
+          price: item.price,
+        });
+      }
+    }
+
+    console.log(`✅ Seeded ${preparedBeans.length} specialty coffees, ${sampleCustomers.length + 2} users, and ${orders.length} orders.`);
   } catch (error) {
     console.error('❌ Failed to seed beans:', error.message);
   } finally {

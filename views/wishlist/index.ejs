@@ -13,9 +13,13 @@
   <div class="row g-3">
     <% items.forEach((entry) => { const item = entry.menuItem; %>
     <div class="col-md-6 col-lg-4">
-      <% const placeholderImage = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80'; %>
+      <% const placeholderImage =
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80';
+      %>
       <article class="coffee-card coffee-card--shop h-100">
-        <div class="coffee-card-media <%= item?.imageUrl ? '' : 'coffee-card-placeholder' %>">
+        <div
+          class="coffee-card-media <%= item?.imageUrl ? '' : 'coffee-card-placeholder' %>"
+        >
           <img
             src="<%= item?.imageUrl || placeholderImage %>"
             alt="<%= item?.name || 'Wishlist item' %>"
@@ -28,18 +32,30 @@
             <div>
               <h3 class="h5 mb-1"><%= item?.name %></h3>
             </div>
-            <span class="badge bg-light text-dark text-uppercase">wishlist</span>
+            <span class="badge bg-light text-dark text-uppercase"
+              >wishlist</span
+            >
           </div>
-          <p class="coffee-card-desc text-muted mb-0"><%= item?.description || 'Saved for later.' %></p>
+          <p class="coffee-card-desc text-muted mb-0">
+            <%= item?.description || 'Saved for later.' %>
+          </p>
           <div class="coffee-card-footer">
             <div>
-              <p class="price mb-0">$<%= parseFloat(item?.price || 0).toFixed(2) %></p>
+              <p class="price mb-0">
+                $<%= parseFloat(item?.price || 0).toFixed(2) %>
+              </p>
               <small class="text-muted">Ready when you are</small>
             </div>
             <div class="coffee-card-actions">
-              <a class="btn btn-outline-secondary btn-sm w-100" href="/menu/<%= item?.id %>">View item</a>
+              <a
+                class="btn btn-outline-secondary btn-sm w-100"
+                href="/menu/<%= item?.id %>"
+                >View item</a
+              >
               <form action="/wishlist/<%= item?.id %>/remove" method="POST">
-                <button class="btn btn-light btn-sm w-100" type="submit">Remove</button>
+                <button class="btn btn-light btn-sm w-100" type="submit">
+                  Remove
+                </button>
               </form>
             </div>
           </div>

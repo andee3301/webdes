@@ -1,56 +1,111 @@
 <%- include('../partials/header') %>
-<section class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h1 class="h4 mb-0">Orders</h1>
-    <p class="text-muted mb-0">Manage customer orders.</p>
-  </div>
-  <form class="d-flex align-items-center gap-2" method="GET" action="/admin/orders">
-    <label class="form-label mb-0 small text-muted">Status</label>
-    <select class="form-select" name="status" onchange="this.form.submit()">
-      <option value="all" <%= filterStatus === 'all' ? 'selected' : '' %>>All</option>
-      <option value="pending" <%= filterStatus === 'pending' ? 'selected' : '' %>>Pending</option>
-      <option value="confirmed" <%= filterStatus === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
-      <option value="shipped" <%= filterStatus === 'shipped' ? 'selected' : '' %>>Shipped</option>
-      <option value="completed" <%= filterStatus === 'completed' ? 'selected' : '' %>>Completed</option>
-      <option value="cancelled" <%= filterStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
-    </select>
-  </form>
-</section>
 
-<div class="table-responsive shadow-sm">
-  <table class="table table-striped align-middle mb-0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Customer</th>
-        <th>Status</th>
-        <th>Total</th>
-        <th>Placed</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (!orders.length) { %>
-      <tr>
-        <td colspan="6" class="text-center text-muted">No orders found.</td>
-      </tr>
-      <% } %> <% orders.forEach((order) => { %>
-      <tr>
-        <td>#<%= order.id %></td>
-        <td><%= order.user?.name %> <br /><small class="text-muted"><%= order.user?.email %></small></td>
-        <td>
-          <span class="badge text-uppercase <%= orderStatusBadgeClass(order.status) %>">
-            <%= orderStatusLabel(order.status) %>
-          </span>
-        </td>
-        <td>$<%= parseFloat(order.totalPrice).toFixed(2) %></td>
-        <td><%= new Date(order.createdAt).toLocaleString() %></td>
-        <td class="text-end">
-          <a class="btn btn-sm btn-outline-primary" href="/admin/orders/<%= order.id %>">Details</a>
-        </td>
-      </tr>
-      <% }); %>
-    </tbody>
-  </table>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Order Management</h1>
+    <p class="admin-page-header__subtitle">View and manage all customer orders.</p>
+  </div>
+  <div class="admin-page-header__actions">
+    <form class="d-flex align-items-center gap-2" method="GET" action="/admin/orders">
+      <select class="form-select" name="status" onchange="this.form.submit()" style="min-width: 160px;">
+        <option value="all" <%= filterStatus === 'all' ? 'selected' : '' %>>All Orders</option>
+        <option value="pending" <%= filterStatus === 'pending' ? 'selected' : '' %>>⏳ Pending</option>
+        <option value="confirmed" <%= filterStatus === 'confirmed' ? 'selected' : '' %>>✓ Confirmed</option>
+        <option value="shipped" <%= filterStatus === 'shipped' ? 'selected' : '' %>>🚚 Shipped</option>
+        <option value="completed" <%= filterStatus === 'completed' ? 'selected' : '' %>>✅ Completed</option>
+        <option value="cancelled" <%= filterStatus === 'cancelled' ? 'selected' : '' %>>❌ Cancelled</option>
+      </select>
+    </form>
+    <a class="btn btn-outline-secondary" href="/admin">← Dashboard</a>
+  </div>
 </div>
+
+<% if (!orders.length) { %>
+<div class="empty-state">
+  <div class="empty-state__icon">📦</div>
+  <h3 class="empty-state__title">No orders found</h3>
+  <p class="empty-state__text">
+    <% if (filterStatus !== 'all') { %>
+    No <%= filterStatus %> orders at the moment.
+    <% } else { %>
+    Orders will appear here when customers make purchases.
+    <% } %>
+  </p>
+  <% if (filterStatus !== 'all') { %>
+  <a class="btn btn-primary" href="/admin/orders">View All Orders</a>
+  <% } %>
+</div>
+<% } else { %>
+
+<div class="order-blocks">
+  <% orders.forEach((order) => { %>
+  <div class="order-block">
+    <div class="order-block__header">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <span class="order-block__id">Order #<%= order.id %></span>
+        <span class="status-badge status-badge--<%= order.status %>">
+          <%= order.status %>
+        </span>
+      </div>
+      <span class="order-block__date">
+        <%= new Date(order.createdAt).toLocaleDateString('en-US', { 
+          weekday: 'short', 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) %>
+      </span>
+    </div>
+    
+    <div class="order-block__body">
+      <div class="order-block__customer">
+        <span class="order-block__label">Customer</span>
+        <span class="order-block__value"><%= order.user ? order.user.name : 'Guest' %></span>
+        <% if (order.user && order.user.email) { %>
+        <small style="color: var(--muted-ink); display: block;"><%= order.user.email %></small>
+        <% } %>
+      </div>
+      <div class="order-block__customer">
+        <span class="order-block__label">Items</span>
+        <span class="order-block__value"><%= order.items ? order.items.length : 0 %> products</span>
+      </div>
+      <div class="order-block__customer">
+        <span class="order-block__label">Total</span>
+        <span class="order-block__value" style="color: var(--burnt-amber); font-weight: 700; font-size: 1.25rem;">
+          $<%= parseFloat(order.totalPrice).toFixed(2) %>
+        </span>
+      </div>
+
+      <% if (order.items && order.items.length) { %>
+      <div class="order-block__items">
+        <span class="order-block__label" style="display: block; margin-bottom: 0.5rem;">Order Items</span>
+        <div class="order-block__items-list">
+          <% order.items.forEach((item) => { %>
+          <div class="order-item-chip">
+            <span class="order-item-chip__qty"><%= item.quantity %>×</span>
+            <span><%= item.menuItem ? item.menuItem.name : 'Unknown' %></span>
+            <span style="color: var(--muted-ink);">$<%= parseFloat(item.subtotal).toFixed(2) %></span>
+          </div>
+          <% }); %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <div class="order-block__footer">
+      <div class="order-block__total">
+        Total: $<%= parseFloat(order.totalPrice).toFixed(2) %>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <a class="btn btn-primary btn-sm" href="/admin/orders/<%= order.id %>">Manage Order</a>
+      </div>
+    </div>
+  </div>
+  <% }); %>
+</div>
+
+<% } %>
+
 <%- include('../partials/footer') %>

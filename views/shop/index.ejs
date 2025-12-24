@@ -91,17 +91,18 @@
 </section>
 
 <section class="shop-pills mb-5">
-  <% if (hasSections) { %>
-    <% shopSections.forEach((section) => { %>
-      <a class="shop-pill" href="#<%= section.key %>"><span><%= section.title %></span></a>
-    <% }); %>
-  <% } else { %>
-    <span class="text-muted">We are roasting the next collection. Check back soon.</span>
+  <% if (hasSections) { %> <% shopSections.forEach((section) => { %>
+  <a class="shop-pill" href="#<%= section.key %>"
+    ><span><%= section.title %></span></a
+  >
+  <% }); %> <% } else { %>
+  <span class="text-muted"
+    >We are roasting the next collection. Check back soon.</span
+  >
   <% } %>
 </section>
 
-<% if (hasSections) { %>
-  <% shopSections.forEach((section) => { %>
+<% if (hasSections) { %> <% shopSections.forEach((section) => { %>
 <section id="<%= section.key %>" class="shop-section mb-5">
   <div class="shop-section-header">
     <div>
@@ -111,12 +112,16 @@
     </div>
     <a class="btn btn-link" href="/about">Our sourcing</a>
   </div>
-  <% const placeholderImage = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80'; %>
+  <% const placeholderImage =
+  'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80';
+  %>
   <div class="row g-4">
     <% section.items.forEach((item) => { %>
     <div class="col-md-6 col-lg-4">
       <article class="coffee-card coffee-card--shop h-100">
-        <div class="coffee-card-media <%= item.imageUrl ? '' : 'coffee-card-placeholder' %>">
+        <div
+          class="coffee-card-media <%= item.imageUrl ? '' : 'coffee-card-placeholder' %>"
+        >
           <img
             src="<%= item.imageUrl || placeholderImage %>"
             alt="<%= item.name %>"
@@ -132,7 +137,9 @@
               <p class="flag-chip mb-0"><%= item.originBadge %></p>
               <% } %>
             </div>
-            <span class="badge bg-dark text-white text-uppercase"><%= item.displayRoast %></span>
+            <span class="badge bg-dark text-white text-uppercase"
+              ><%= item.displayRoast %></span
+            >
             <span class="badge bg-light text-dark text-uppercase"
               ><%= item.category || 'beans' %></span
             >
@@ -151,14 +158,18 @@
               <p class="mb-0 fw-semibold"><%= item.process || 'Washed' %></p>
             </div>
           </div>
-          <% const tags = item.tags && item.tags.length ? item.tags : item.tagList; if (tags && tags.length) { %>
+          <% const tags = item.tags && item.tags.length ? item.tags :
+          item.tagList; if (tags && tags.length) { %>
           <div class="note-chips">
             <% tags.slice(0, 5).forEach((tag) => { %>
             <span class="note-chip"><%= tag %></span>
             <% }); %>
           </div>
           <% } %>
-          <p class="coffee-card-desc text-muted mb-3"><%= item.description || 'Hand-roasted coffee designed for calm mornings.' %></p>
+          <p class="coffee-card-desc text-muted mb-3">
+            <%= item.description || 'Hand-roasted coffee designed for calm
+            mornings.' %>
+          </p>
           <div class="coffee-card-footer">
             <div>
               <p class="price mb-0">
@@ -211,5 +222,4 @@
   </p>
   <a class="btn btn-primary" href="/about">Learn about our sourcing</a>
 </section>
-<% } %>
-<%- include('../partials/footer') %>
+<% } %> <%- include('../partials/footer') %>

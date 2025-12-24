@@ -1,56 +1,429 @@
 <%- include('../partials/header') %>
-<section class="mb-4">
-  <div class="d-flex justify-content-between align-items-center">
-    <div>
-      <h1 class="h4 mb-1">Admin dashboard</h1>
-      <p class="text-muted mb-0">Quick snapshot of orders and customers.</p>
-    </div>
-    <div class="d-flex gap-2">
-      <a class="btn btn-outline-primary" href="/admin/orders">Orders</a>
-      <a class="btn btn-primary" href="/admin/menu-items">Manage menu</a>
-    </div>
-  </div>
-</section>
 
-<div class="row g-3">
-  <div class="col-md-3">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <p class="text-muted mb-1">Orders today</p>
-        <h3 class="mb-0"><%= ordersToday %></h3>
-      </div>
-    </div>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Dashboard</h1>
+    <p class="admin-page-header__subtitle">
+      Welcome back! Here's what's happening with your coffee shop.
+    </p>
   </div>
-  <div class="col-md-3">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <p class="text-muted mb-1">Revenue today</p>
-        <h3 class="mb-0">$<%= Number(revenueToday).toFixed(2) %></h3>
-      </div>
-    </div>
+  <div class="admin-page-header__actions">
+    <a class="btn btn-outline-secondary" href="/admin/orders">View Orders</a>
+    <a class="btn btn-primary" href="/admin/menu-items">Manage Stock</a>
   </div>
-  <div class="col-md-3">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <p class="text-muted mb-1">Total users</p>
-        <h3 class="mb-0"><%= userCount %></h3>
-      </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="admin-stats-grid">
+  <!-- Revenue Today -->
+  <div class="stat-card">
+    <div class="stat-card__header">
+      <div class="stat-card__icon stat-card__icon--revenue">💰</div>
+      <% const revChange = revenueYesterday > 0 ? ((revenueToday -
+      revenueYesterday) / revenueYesterday * 100).toFixed(1) : 0; %>
+      <span
+        class="stat-card__badge <%= revChange >= 0 ? 'stat-card__badge--up' : 'stat-card__badge--down' %>"
+      >
+        <%= revChange >= 0 ? '↑' : '↓' %> <%= Math.abs(revChange) %>%
+      </span>
     </div>
+    <p class="stat-card__value">$<%= Number(revenueToday).toFixed(2) %></p>
+    <p class="stat-card__label">Revenue Today</p>
+    <p class="stat-card__footer">
+      Yesterday: $<%= Number(revenueYesterday).toFixed(2) %>
+    </p>
   </div>
-  <div class="col-md-3">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <p class="text-muted mb-1">Orders by status</p>
-        <div class="small">
-          <% Object.keys(statusCounts).forEach((key) => { %>
-          <div class="d-flex justify-content-between">
-            <span class="text-uppercase"><%= key %></span>
-            <strong><%= statusCounts[key] %></strong>
+
+  <!-- Orders Today -->
+  <div class="stat-card">
+    <div class="stat-card__header">
+      <div class="stat-card__icon stat-card__icon--orders">📦</div>
+      <% const orderChange = ordersYesterday > 0 ? ((ordersToday -
+      ordersYesterday) / ordersYesterday * 100).toFixed(1) : 0; %>
+      <span
+        class="stat-card__badge <%= orderChange >= 0 ? 'stat-card__badge--up' : 'stat-card__badge--down' %>"
+      >
+        <%= orderChange >= 0 ? '↑' : '↓' %> <%= Math.abs(orderChange) %>%
+      </span>
+    </div>
+    <p class="stat-card__value"><%= ordersToday %></p>
+    <p class="stat-card__label">Orders Today</p>
+    <p class="stat-card__footer">Yesterday: <%= ordersYesterday %> orders</p>
+  </div>
+
+  <!-- Monthly Revenue -->
+  <div class="stat-card">
+    <div class="stat-card__header">
+      <div class="stat-card__icon stat-card__icon--revenue">📈</div>
+      <% const monthChange = revenueLastMonth > 0 ? ((revenueThisMonth -
+      revenueLastMonth) / revenueLastMonth * 100).toFixed(1) : 0; %>
+      <span
+        class="stat-card__badge <%= monthChange >= 0 ? 'stat-card__badge--up' : 'stat-card__badge--down' %>"
+      >
+        <%= monthChange >= 0 ? '↑' : '↓' %> <%= Math.abs(monthChange) %>%
+      </span>
+    </div>
+    <p class="stat-card__value">$<%= Number(revenueThisMonth).toFixed(2) %></p>
+    <p class="stat-card__label">Revenue This Month</p>
+    <p class="stat-card__footer"><%= ordersThisMonth %> orders this month</p>
+  </div>
+
+  <!-- Avg Order Value -->
+  <div class="stat-card">
+    <div class="stat-card__header">
+      <div class="stat-card__icon stat-card__icon--products">🎯</div>
+      <% const avgChange = avgOrderValueLastMonth > 0 ? ((avgOrderValue -
+      avgOrderValueLastMonth) / avgOrderValueLastMonth * 100).toFixed(1) : 0; %>
+      <span
+        class="stat-card__badge <%= avgChange >= 0 ? 'stat-card__badge--up' : 'stat-card__badge--down' %>"
+      >
+        <%= avgChange >= 0 ? '↑' : '↓' %> <%= Math.abs(avgChange) %>%
+      </span>
+    </div>
+    <p class="stat-card__value">$<%= Number(avgOrderValue).toFixed(2) %></p>
+    <p class="stat-card__label">Avg Order Value</p>
+    <p class="stat-card__footer">
+      Last month: $<%= Number(avgOrderValueLastMonth).toFixed(2) %>
+    </p>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+  <!-- Revenue Chart -->
+  <div class="col-lg-8">
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>Revenue Trend (Last 7 Days)</h3>
+        <div class="chart-legend">
+          <div class="chart-legend-item">
+            <span
+              class="chart-legend-dot"
+              style="background: var(--burnt-amber)"
+            ></span>
+            <span>Revenue</span>
           </div>
-          <% }); %>
+          <div class="chart-legend-item">
+            <span
+              class="chart-legend-dot"
+              style="background: var(--latte)"
+            ></span>
+            <span>Orders</span>
+          </div>
         </div>
+      </div>
+      <div class="chart-canvas-wrapper">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Status Breakdown -->
+  <div class="col-lg-4">
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>Order Status</h3>
+      </div>
+      <div class="chart-canvas-wrapper">
+        <canvas id="statusChart"></canvas>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Second Row: Top Products & Recent Orders -->
+<div class="row g-4 mb-4">
+  <!-- Top Selling Products -->
+  <div class="col-lg-5">
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>Top Selling Products</h3>
+        <span class="badge bg-light text-dark">This Month</span>
+      </div>
+      <% if (topProducts && topProducts.length) { %>
+      <div class="top-products-list">
+        <% topProducts.forEach((item, index) => { %>
+        <div class="top-product-item">
+          <div class="top-product-rank"><%= index + 1 %></div>
+          <div class="top-product-info">
+            <p class="top-product-name">
+              <%= item.menuItem ? item.menuItem.name : 'Unknown' %>
+            </p>
+            <p class="top-product-meta">
+              <%= item.menuItem ? item.menuItem.originFlag : '' %> <%=
+              item.menuItem ? item.menuItem.category : '' %>
+            </p>
+          </div>
+          <div class="top-product-stats">
+            <p class="top-product-revenue">
+              $<%= Number(item.dataValues.totalRevenue || 0).toFixed(2) %>
+            </p>
+            <p class="top-product-qty">
+              <%= item.dataValues.totalQty || 0 %> sold
+            </p>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+      <% } else { %>
+      <div class="empty-state" style="padding: 2rem">
+        <p class="text-muted mb-0">No sales data yet this month.</p>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Recent Orders -->
+  <div class="col-lg-7">
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>Recent Orders</h3>
+        <a href="/admin/orders" class="btn btn-sm btn-outline-secondary"
+          >View All</a
+        >
+      </div>
+      <% if (recentOrders && recentOrders.length) { %>
+      <div class="order-blocks" style="max-height: 400px; overflow-y: auto">
+        <% recentOrders.forEach((order) => { %>
+        <div class="order-block">
+          <div class="order-block__header">
+            <div>
+              <span class="order-block__id">#<%= order.id %></span>
+              <span class="status-badge status-badge--<%= order.status %>"
+                ><%= order.status %></span
+              >
+            </div>
+            <span class="order-block__date"
+              ><%= new Date(order.createdAt).toLocaleDateString() %></span
+            >
+          </div>
+          <div class="order-block__body">
+            <div class="order-block__customer">
+              <span class="order-block__label">Customer</span>
+              <span class="order-block__value"
+                ><%= order.user ? order.user.name : 'Guest' %></span
+              >
+            </div>
+            <div class="order-block__customer">
+              <span class="order-block__label">Items</span>
+              <span class="order-block__value"
+                ><%= order.items ? order.items.length : 0 %> products</span
+              >
+            </div>
+            <div class="order-block__customer">
+              <span class="order-block__label">Total</span>
+              <span
+                class="order-block__value"
+                style="color: var(--burnt-amber); font-weight: 700"
+                >$<%= Number(order.totalPrice).toFixed(2) %></span
+              >
+            </div>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+      <% } else { %>
+      <div class="empty-state" style="padding: 2rem">
+        <p class="text-muted mb-0">No orders yet.</p>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Inventory Alerts Row -->
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card" style="border-left: 4px solid var(--burnt-amber)">
+      <div class="stat-card__header">
+        <div class="stat-card__icon stat-card__icon--products">☕</div>
+      </div>
+      <p class="stat-card__value"><%= menuItemCount %></p>
+      <p class="stat-card__label">Total Products</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card" style="border-left: 4px solid #e67e22">
+      <div class="stat-card__header">
+        <div
+          class="stat-card__icon"
+          style="background: rgba(230, 126, 34, 0.15); color: #e67e22"
+        >
+          ⚠️
+        </div>
+      </div>
+      <p class="stat-card__value"><%= lowStockCount %></p>
+      <p class="stat-card__label">Low Stock Items</p>
+      <p class="stat-card__footer">Less than 10 units remaining</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card" style="border-left: 4px solid #e74c3c">
+      <div class="stat-card__header">
+        <div
+          class="stat-card__icon"
+          style="background: rgba(231, 76, 60, 0.15); color: #e74c3c"
+        >
+          🚫
+        </div>
+      </div>
+      <p class="stat-card__value"><%= outOfStockCount %></p>
+      <p class="stat-card__label">Out of Stock</p>
+      <p class="stat-card__footer">
+        <a href="/admin/menu-items" style="color: #e74c3c">Restock now →</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions-grid">
+  <a href="/admin/menu-items/new" class="quick-action-card">
+    <span class="quick-action-card__icon">➕</span>
+    <span class="quick-action-card__label">Add New Product</span>
+  </a>
+  <a href="/admin/orders?status=pending" class="quick-action-card">
+    <span class="quick-action-card__icon">⏳</span>
+    <span class="quick-action-card__label"
+      >Pending Orders (<%= statusCounts.pending || 0 %>)</span
+    >
+  </a>
+  <a href="/admin/reviews?status=pending" class="quick-action-card">
+    <span class="quick-action-card__icon">💬</span>
+    <span class="quick-action-card__label">Review Moderation</span>
+  </a>
+  <a href="/admin/menu-items" class="quick-action-card">
+    <span class="quick-action-card__icon">📊</span>
+    <span class="quick-action-card__label">Stock Management</span>
+  </a>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  // Revenue data from server
+  const revenueData = <%- revenueByDay %>;
+
+  // Prepare chart data
+  const last7Days = [];
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    last7Days.push(d.toISOString().split('T')[0]);
+  }
+
+  const revenueValues = last7Days.map(date => {
+    const found = revenueData.find(r => r.date === date);
+    return found ? parseFloat(found.revenue) : 0;
+  });
+
+  const orderValues = last7Days.map(date => {
+    const found = revenueData.find(r => r.date === date);
+    return found ? parseInt(found.orders) : 0;
+  });
+
+  const dayLabels = last7Days.map(d => {
+    const date = new Date(d);
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  });
+
+  // Revenue Chart
+  new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: {
+      labels: dayLabels,
+      datasets: [{
+        label: 'Revenue',
+        data: revenueValues,
+        borderColor: '#c67a3f',
+        backgroundColor: 'rgba(198, 122, 63, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointBackgroundColor: '#c67a3f',
+        yAxisID: 'y'
+      }, {
+        label: 'Orders',
+        data: orderValues,
+        borderColor: '#c9b8a8',
+        backgroundColor: 'rgba(201, 184, 168, 0.1)',
+        fill: false,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#c9b8a8',
+        yAxisID: 'y1'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          position: 'left',
+          grid: { color: 'rgba(74, 55, 40, 0.08)' },
+          ticks: {
+            callback: value => '$' + value,
+            color: '#7a6b5e'
+          }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          grid: { display: false },
+          ticks: { color: '#7a6b5e' }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#7a6b5e' }
+        }
+      }
+    }
+  });
+
+  // Status Chart
+  const statusCounts = <%- JSON.stringify(statusCounts) %>;
+  const statusLabels = Object.keys(statusCounts);
+  const statusValues = Object.values(statusCounts);
+  const statusColors = {
+    pending: '#f1c40f',
+    confirmed: '#3498db',
+    shipped: '#9b59b6',
+    completed: '#2ecc71',
+    cancelled: '#e74c3c'
+  };
+
+  new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: statusLabels.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
+      datasets: [{
+        data: statusValues,
+        backgroundColor: statusLabels.map(s => statusColors[s] || '#95a5a6'),
+        borderWidth: 0,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 16,
+            usePointStyle: true,
+            color: '#4a3728'
+          }
+        }
+      },
+      cutout: '65%'
+    }
+  });
+</script>
+
 <%- include('../partials/footer') %>

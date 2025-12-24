@@ -12,6 +12,9 @@ router.get('/menu-items/:id/edit', adminController.editMenuItemForm);
 router.post('/menu-items/:id', adminController.updateMenuItem);
 router.post('/menu-items/:id/delete', adminController.deleteMenuItem);
 
+// Quick stock/image update API
+router.post('/menu-items/:id/quick-update', adminController.quickUpdateMenuItem);
+
 router.get('/orders', adminController.listOrders);
 router.get('/orders/:id', adminController.viewOrder);
 router.post('/orders/:id/status', adminController.updateOrderStatus);

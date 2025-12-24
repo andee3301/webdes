@@ -24,7 +24,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.9rem 0;
+            padding: 1rem 0;
+            gap: 2rem;
           "
         >
           <a
@@ -32,10 +33,11 @@
             href="/"
             style="
               font-family: 'Cormorant Garamond', serif;
-              font-size: 1.4rem;
+              font-size: 1.5rem;
               font-weight: 700;
               color: var(--roast-brown);
               text-decoration: none;
+              white-space: nowrap;
             "
           >
             Andy Roasting Co.
@@ -44,40 +46,66 @@
             class="nav-links"
             style="
               display: flex;
-              gap: 1rem;
-              font-weight: 600;
-              color: var(--muted-ink);
+              gap: 1.5rem;
+              font-weight: 500;
+              font-size: 1rem;
             "
           >
-            <a href="/shop" style="text-decoration: none; color: inherit"
+            <a
+              href="/shop"
+              style="
+                text-decoration: none;
+                color: var(--stone-gray);
+                transition: color 0.2s;
+              "
               >Shop</a
             >
-            <a href="/about" style="text-decoration: none; color: inherit"
+            <a
+              href="/about"
+              style="
+                text-decoration: none;
+                color: var(--stone-gray);
+                transition: color 0.2s;
+              "
               >About</a
             >
-            <a href="/journal" style="text-decoration: none; color: inherit"
+            <a
+              href="/journal"
+              style="
+                text-decoration: none;
+                color: var(--stone-gray);
+                transition: color 0.2s;
+              "
               >Journal</a
             >
             <% if (user) { %>
-            <a href="/wishlist" style="text-decoration: none; color: inherit"
+            <a
+              href="/wishlist"
+              style="
+                text-decoration: none;
+                color: var(--stone-gray);
+                transition: color 0.2s;
+              "
               >Wishlist</a
             >
-            <a href="/orders" style="text-decoration: none; color: inherit"
+            <a
+              href="/orders"
+              style="
+                text-decoration: none;
+                color: var(--stone-gray);
+                transition: color 0.2s;
+              "
               >Orders</a
             >
             <% } %>
           </nav>
           <div
             class="nav-actions"
-            style="display: flex; align-items: center; gap: 0.6rem"
+            style="display: flex; align-items: center; gap: 0.75rem"
           >
-            <a
-              class="btn btn-light btn-sm"
-              href="/cart"
-              style="display: inline-flex; align-items: center; gap: 0.4rem"
-            >
-              Cart <% if (cartCount > 0) { %>
-              <span class="badge rounded-pill ms-1 bg-warning text-dark"
+            <a class="cart-pill" href="/cart">
+              🛒 Cart <% if (cartCount > 0) { %>
+              <span class="badge rounded-pill bg-warning text-dark"
                 ><%= cartCount %></span
               >
               <% } %>
@@ -85,14 +113,11 @@
             <% if (user) { %> <% if (user.role === 'admin') { %>
             <a class="btn btn-outline-secondary btn-sm" href="/admin">Admin</a>
             <% } %>
-            <a class="btn btn-primary btn-sm" href="/orders">Account</a>
             <form action="/logout" method="POST" class="d-inline">
-              <button class="btn btn-outline-secondary btn-sm" type="submit">
-                Logout
-              </button>
+              <button class="btn btn-light btn-sm" type="submit">Logout</button>
             </form>
             <% } else { %>
-            <a class="btn btn-primary btn-sm" href="/login">Account</a>
+            <a class="btn btn-primary btn-sm" href="/login">Sign In</a>
             <% } %>
           </div>
         </div>
@@ -117,8 +142,6 @@
         <% }); %>
       </div>
       <% } %>
-
-      <div class="page-content"></div>
     </main>
   </body>
 </html>

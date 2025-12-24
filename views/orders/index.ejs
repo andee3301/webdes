@@ -1,52 +1,82 @@
 <%- include('../partials/header') %>
-<section>
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-      <h1 class="h4 mb-0">My orders</h1>
-      <p class="text-muted mb-0">Track your coffee deliveries.</p>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">My Orders</h1>
+    <p class="admin-page-header__subtitle">
+      Track your coffee deliveries and order history.
+    </p>
+  </div>
+  <div class="admin-page-header__actions">
+    <a class="btn btn-primary" href="/shop">Continue Shopping</a>
+  </div>
+</div>
+
+<% if (!orders.length) { %>
+<div class="empty-state">
+  <div class="empty-state__icon">📦</div>
+  <h3 class="empty-state__title">No orders yet</h3>
+  <p class="empty-state__text">
+    Your coffee journey awaits! Browse our menu to find your perfect roast.
+  </p>
+  <a class="btn btn-primary" href="/shop">Shop Now</a>
+</div>
+<% } else { %>
+
+<div class="order-blocks">
+  <% orders.forEach((order) => { %>
+  <div class="order-block">
+    <div class="order-block__header">
+      <div style="display: flex; align-items: center; gap: 1rem">
+        <span class="order-block__id">Order #<%= order.id %></span>
+        <span class="status-badge status-badge--<%= order.status %>">
+          <%= order.status %>
+        </span>
+      </div>
+      <span class="order-block__date">
+        <%= new Date(order.createdAt).toLocaleDateString('en-US', { weekday:
+        'short', year: 'numeric', month: 'short', day: 'numeric', hour:
+        '2-digit', minute: '2-digit' }) %>
+      </span>
+    </div>
+
+    <div class="order-block__body">
+      <div class="order-block__customer">
+        <span class="order-block__label">Status</span>
+        <span class="order-block__value">
+          <% if (order.status === 'pending') { %> ⏳ Awaiting confirmation <% }
+          else if (order.status === 'confirmed') { %> ✓ Order confirmed <% }
+          else if (order.status === 'shipped') { %> 🚚 On the way <% } else if
+          (order.status === 'completed') { %> ✅ Delivered <% } else { %> ❌
+          Cancelled <% } %>
+        </span>
+      </div>
+      <div class="order-block__customer">
+        <span class="order-block__label">Total</span>
+        <span
+          class="order-block__value"
+          style="
+            color: var(--burnt-amber);
+            font-weight: 700;
+            font-size: 1.25rem;
+          "
+        >
+          $<%= parseFloat(order.totalPrice).toFixed(2) %>
+        </span>
+      </div>
+    </div>
+
+    <div class="order-block__footer">
+      <div style="color: var(--muted-ink); font-size: var(--font-sm)">
+        <% if (order.shippingAddress) { %> 📍 <%= order.shippingAddress %> <% }
+        %>
+      </div>
+      <a class="btn btn-primary btn-sm" href="/orders/<%= order.id %>"
+        >View Details →</a
+      >
     </div>
   </div>
-  <% if (!orders.length) { %>
-  <div class="alert alert-light border">
-    No orders yet. Grab something from the menu!
-  </div>
-  <% } else { %>
-  <div class="table-responsive shadow-sm">
-    <table class="table table-striped align-middle mb-0">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Status</th>
-          <th>Total</th>
-          <th>Placed</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% orders.forEach((order) => { %>
-        <tr>
-          <td>#<%= order.id %></td>
-          <td>
-            <span
-              class="badge text-uppercase <%= orderStatusBadgeClass(order.status) %>"
-            >
-              <%= orderStatusLabel(order.status) %>
-            </span>
-          </td>
-          <td>$<%= parseFloat(order.totalPrice).toFixed(2) %></td>
-          <td><%= new Date(order.createdAt).toLocaleString() %></td>
-          <td>
-            <a
-              class="btn btn-sm btn-outline-primary"
-              href="/orders/<%= order.id %>"
-              >Details</a
-            >
-          </td>
-        </tr>
-        <% }); %>
-      </tbody>
-    </table>
-  </div>
-  <% } %>
-</section>
-<%- include('../partials/footer') %>
+  <% }); %>
+</div>
+
+<% } %> <%- include('../partials/footer') %>

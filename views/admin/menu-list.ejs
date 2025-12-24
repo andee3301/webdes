@@ -1,73 +1,210 @@
 <%- include('../partials/header') %>
-<section class="d-flex justify-content-between align-items-center mb-3">
+
+<div class="admin-page-header">
   <div>
-    <h1 class="h4 mb-0">Menu items</h1>
-    <p class="text-muted mb-0">
-      Update the products available on the storefront.
+    <h1 class="admin-page-header__title">Stock Board</h1>
+    <p class="admin-page-header__subtitle">
+      Manage your coffee inventory with visual previews and quick edits.
     </p>
   </div>
-  <a class="btn btn-primary" href="/admin/menu-items/new">Add item</a>
-</section>
-
-<div class="table-responsive shadow-sm">
-  <table class="table table-striped align-middle mb-0">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Price</th>
-        <th>Stock</th>
-        <th>Status</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (!items.length) { %>
-      <tr>
-        <td colspan="6" class="text-center text-muted">No menu items yet.</td>
-      </tr>
-      <% } %> <% items.forEach((item) => { %>
-      <tr>
-        <td><%= item.name %></td>
-        <td class="text-capitalize"><%= item.category || '—' %></td>
-        <td>$<%= parseFloat(item.price).toFixed(2) %></td>
-        <td>
-          <% if (item.stock === null || item.stock === undefined) { %>
-          <span class="text-muted">Unlimited</span>
-          <% } else if (item.stock === 0) { %>
-          <span class="badge bg-danger">Out of stock</span>
-          <% } else if (item.stock < 10) { %>
-          <span class="badge bg-warning text-dark"><%= item.stock %> left</span>
-          <% } else { %>
-          <span class="badge bg-info"><%= item.stock %> in stock</span>
-          <% } %>
-        </td>
-        <td>
-          <% if (item.isAvailable) { %>
-          <span class="badge bg-success">Available</span>
-          <% } else { %>
-          <span class="badge bg-secondary">Hidden</span>
-          <% } %>
-        </td>
-        <td class="text-end">
-          <a
-            class="btn btn-sm btn-outline-primary"
-            href="/admin/menu-items/<%= item.id %>/edit"
-            >Edit</a
-          >
-          <form
-            action="/admin/menu-items/<%= item.id %>/delete"
-            method="POST"
-            class="d-inline"
-          >
-            <button class="btn btn-sm btn-outline-danger" type="submit">
-              Delete
-            </button>
-          </form>
-        </td>
-      </tr>
-      <% }); %>
-    </tbody>
-  </table>
+  <div class="admin-page-header__actions">
+    <a class="btn btn-outline-secondary" href="/admin">← Dashboard</a>
+    <a class="btn btn-primary" href="/admin/menu-items/new">+ Add Product</a>
+  </div>
 </div>
-<%- include('../partials/footer') %>
+
+<% if (!items.length) { %>
+<div class="empty-state">
+  <div class="empty-state__icon">☕</div>
+  <h3 class="empty-state__title">No products yet</h3>
+  <p class="empty-state__text">
+    Start building your coffee menu by adding your first product.
+  </p>
+  <a class="btn btn-primary" href="/admin/menu-items/new"
+    >Add Your First Coffee</a
+  >
+</div>
+<% } else { %>
+
+<!-- Stock Summary Bar -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card" style="padding: 1rem 1.25rem">
+      <p class="stat-card__label" style="margin-bottom: 0.25rem">
+        Total Products
+      </p>
+      <p class="stat-card__value" style="font-size: 1.75rem">
+        <%= items.length %>
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div
+      class="stat-card"
+      style="padding: 1rem 1.25rem; border-left: 3px solid #27ae60"
+    >
+      <p class="stat-card__label" style="margin-bottom: 0.25rem">In Stock</p>
+      <p class="stat-card__value" style="font-size: 1.75rem; color: #27ae60">
+        <%= items.filter(i => i.stock === null || i.stock > 10).length %>
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div
+      class="stat-card"
+      style="padding: 1rem 1.25rem; border-left: 3px solid #e67e22"
+    >
+      <p class="stat-card__label" style="margin-bottom: 0.25rem">Low Stock</p>
+      <p class="stat-card__value" style="font-size: 1.75rem; color: #e67e22">
+        <%= items.filter(i => i.stock !== null && i.stock > 0 && i.stock <
+        10).length %>
+      </p>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div
+      class="stat-card"
+      style="padding: 1rem 1.25rem; border-left: 3px solid #e74c3c"
+    >
+      <p class="stat-card__label" style="margin-bottom: 0.25rem">
+        Out of Stock
+      </p>
+      <p class="stat-card__value" style="font-size: 1.75rem; color: #e74c3c">
+        <%= items.filter(i => i.stock === 0).length %>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Stock Board Grid -->
+<div class="stock-board">
+  <% items.forEach((item) => { const stockPercent = item.stock === null ? 100 :
+  Math.min((item.stock / 50) * 100, 100); const stockClass = item.stock === null
+  ? 'unlimited' : item.stock === 0 ? 'critical' : item.stock < 10 ? 'low' :
+  'good'; %>
+  <div class="stock-card">
+    <!-- Image Section -->
+    <div class="stock-card__image">
+      <% if (item.imageUrl) { %>
+      <img
+        src="<%= item.imageUrl %>"
+        alt="<%= item.name %>"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+      />
+      <div class="stock-card__image-placeholder" style="display: none">☕</div>
+      <% } else { %>
+      <div class="stock-card__image-placeholder">☕</div>
+      <% } %>
+      <span class="stock-card__category"><%= item.category || 'coffee' %></span>
+      <div class="stock-card__status">
+        <% if (item.isAvailable) { %>
+        <span class="status-badge status-badge--available">Available</span>
+        <% } else { %>
+        <span class="status-badge status-badge--hidden">Hidden</span>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Body Section -->
+    <div class="stock-card__body">
+      <h3 class="stock-card__name"><%= item.name %></h3>
+      <p class="stock-card__origin">
+        <%= item.originFlag || '🌍' %> <%= item.originCountry || 'Single Origin'
+        %> <% if (item.region) { %> · <%= item.region %><% } %>
+      </p>
+
+      <!-- Meta Grid -->
+      <div class="stock-card__meta">
+        <div class="stock-meta-item">
+          <span class="label">Price</span>
+          <span class="value">$<%= parseFloat(item.price).toFixed(2) %></span>
+        </div>
+        <div class="stock-meta-item">
+          <span class="label">Roast</span>
+          <span class="value"><%= item.roastLevel || 'Medium' %></span>
+        </div>
+      </div>
+
+      <!-- Stock Level Progress -->
+      <div class="stock-level">
+        <div class="stock-level__header">
+          <span>Stock Level</span>
+          <span>
+            <% if (item.stock === null) { %>
+            <strong style="color: #3498db">Unlimited</strong>
+            <% } else if (item.stock === 0) { %>
+            <strong style="color: #e74c3c">Out of Stock</strong>
+            <% } else { %>
+            <strong><%= item.stock %> units</strong>
+            <% } %>
+          </span>
+        </div>
+        <div class="stock-level__bar">
+          <div
+            class="stock-level__fill stock-level__fill--<%= stockClass %>"
+            style="width: <%= stockPercent %>%"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Quick Edit Form -->
+      <form
+        action="/admin/menu-items/<%= item.id %>/quick-update"
+        method="POST"
+        class="stock-card__quick-edit"
+      >
+        <input
+          type="number"
+          name="stock"
+          class="form-control"
+          placeholder="Stock qty"
+          value="<%= item.stock !== null ? item.stock : '' %>"
+          min="0"
+          title="Leave empty for unlimited"
+        />
+        <input
+          type="url"
+          name="imageUrl"
+          class="form-control"
+          placeholder="Image URL"
+          value="<%= item.imageUrl || '' %>"
+          style="flex: 2"
+        />
+        <button
+          type="submit"
+          class="btn btn-primary btn-sm"
+          title="Save changes"
+        >
+          💾
+        </button>
+      </form>
+
+      <!-- Action Buttons -->
+      <div class="stock-card__actions">
+        <a
+          class="btn btn-outline-secondary btn-sm"
+          href="/admin/menu-items/<%= item.id %>/edit"
+          >Edit Details</a
+        >
+        <a
+          class="btn btn-outline-secondary btn-sm"
+          href="/menu/<%= item.id %>"
+          target="_blank"
+          >View →</a
+        >
+        <form
+          action="/admin/menu-items/<%= item.id %>/delete"
+          method="POST"
+          class="d-inline"
+          onsubmit="return confirm('Delete <%= item.name %>?');"
+        >
+          <button class="btn btn-outline-danger btn-sm" type="submit">
+            Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <% }); %>
+</div>
+<% } %> <%- include('../partials/footer') %>
