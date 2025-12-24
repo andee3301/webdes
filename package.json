@@ -10,7 +10,8 @@
     "seed": "node scripts/seed.js",
     "seed:stock": "node scripts/resetMenuStock.js",
     "build:spa": "node scripts/build-spa.js",
-    "seed:beans": "node scripts/seed-beans.js"
+    "seed:beans": "node scripts/seed-beans.js",
+    "images:apply-stock": "node scripts/apply-stock-images.js"
   },
   "keywords": [
     "express",

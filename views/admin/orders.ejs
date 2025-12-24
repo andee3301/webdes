@@ -38,7 +38,11 @@
       <tr>
         <td>#<%= order.id %></td>
         <td><%= order.user?.name %> <br /><small class="text-muted"><%= order.user?.email %></small></td>
-        <td><span class="badge bg-secondary text-uppercase"><%= order.status %></span></td>
+        <td>
+          <span class="badge text-uppercase <%= orderStatusBadgeClass(order.status) %>">
+            <%= orderStatusLabel(order.status) %>
+          </span>
+        </td>
         <td>$<%= parseFloat(order.totalPrice).toFixed(2) %></td>
         <td><%= new Date(order.createdAt).toLocaleString() %></td>
         <td class="text-end">

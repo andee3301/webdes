@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d9a25f" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#e6d6c4" stop-opacity="0.35"/>
+    </linearGradient>
+    <radialGradient id="v" cx="50%" cy="40%" r="70%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="#0f0b09"/>
+  <rect width="1600" height="900" fill="url(#v)"/>
+
+  <!-- abstract "coffee bean" shapes -->
+  <g fill="url(#g)" opacity="0.55" filter="url(#soft)">
+    <path d="M210 220c90-40 170 20 150 120-20 110-170 200-250 120-70-70 10-200 100-240z"/>
+    <path d="M520 120c110-50 210 40 170 160-40 120-220 220-320 130-85-75 20-240 150-290z"/>
+    <path d="M980 180c120-55 230 50 185 175-50 140-260 250-370 150-95-85 30-265 185-325z"/>
+    <path d="M1320 110c90-45 185 25 150 135-35 110-200 200-295 120-75-65 30-200 145-255z"/>
+
+    <path d="M360 640c120-60 235 55 185 185-55 145-280 260-395 150-100-95 40-285 210-335z"/>
+    <path d="M760 560c140-70 280 70 215 215-70 160-330 290-470 170-120-110 55-320 255-385z"/>
+    <path d="M1200 620c130-65 270 55 205 200-65 150-315 270-450 160-115-95 55-305 245-360z"/>
+  </g>
+
+  <!-- subtle lines like roast curves -->
+  <g stroke="#f0e6da" stroke-opacity="0.12" fill="none">
+    <path d="M140 380c180-160 460-210 740-120 240 80 420 230 580 420" stroke-width="3"/>
+    <path d="M60 520c230-210 560-260 880-150 270 95 470 270 640 500" stroke-width="2"/>
+  </g>
+</svg>

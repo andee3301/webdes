@@ -12,3 +12,5 @@ npm-debug.log*
 .copilot/
 copilot.log
 .env.example
+
+stock img/dataset/

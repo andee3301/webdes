@@ -1,0 +1,120 @@
+<%- include('../partials/header') %>
+
+<section class="flow-hero mb-4">
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
+    <div>
+      <p class="kicker mb-2">Checkout</p>
+      <h1 class="h3 mb-1">Pay via QR</h1>
+      <p class="text-muted mb-0">
+        Order #<%= order.id %> · Total
+        <strong>$<%= Number(order.totalPrice).toFixed(2) %></strong>
+      </p>
+    </div>
+    <a class="btn btn-outline-secondary" href="/orders/<%= order.id %>"
+      >View invoice</a
+    >
+  </div>
+</section>
+
+<section class="row g-4 align-items-start">
+  <div class="col-lg-7">
+    <div class="card shadow-sm flow-card">
+      <div class="card-body">
+        <div
+          class="d-flex flex-wrap align-items-start justify-content-between gap-3"
+        >
+          <div>
+            <h2 class="h5 mb-2">Scan to pay</h2>
+            <p class="text-muted mb-0">
+              Scan the QR code with your banking app, pay the exact amount, then
+              confirm below to start shipping.
+            </p>
+          </div>
+          <div class="qr-wrap">
+            <img
+              class="qr-image"
+              src="/images/image.png"
+              alt="QR payment"
+              loading="lazy"
+              onerror="this.onerror=null;this.src='/images/qr-pay.svg'"
+            />
+          </div>
+        </div>
+
+        <div class="flow-divider"></div>
+
+        <div class="flow-pills">
+          <span class="pill"
+            >Amount: $<%= Number(order.totalPrice).toFixed(2) %></span
+          >
+          <span class="pill"
+            >Status: <%= order.status === 'pending' ? 'Awaiting payment' :
+            orderStatusLabel(order.status) %></span
+          >
+        </div>
+
+        <form
+          class="mt-4 d-flex flex-wrap gap-2"
+          action="/checkout/qr/<%= order.id %>/confirm"
+          method="POST"
+        >
+          <button class="btn btn-primary" type="submit">
+            I’ve paid — start shipping
+          </button>
+          <a class="btn btn-outline-secondary" href="/orders">Back to orders</a>
+        </form>
+
+        <p class="small text-muted mt-3 mb-0">
+          Tip: If you already confirmed payment, just open the invoice — the
+          status will show <strong>In shipping</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card shadow-sm flow-card">
+      <div class="card-body">
+        <h2 class="h5">Order summary</h2>
+        <ul class="list-group list-group-flush">
+          <% order.items.forEach((item) => { %>
+          <li class="list-group-item d-flex justify-content-between">
+            <span><%= item.menuItem?.name %> × <%= item.quantity %></span>
+            <strong>$<%= Number(item.subtotal).toFixed(2) %></strong>
+          </li>
+          <% }); %>
+        </ul>
+
+        <div class="d-flex justify-content-between mt-3">
+          <span>Total</span>
+          <strong>$<%= Number(order.totalPrice).toFixed(2) %></strong>
+        </div>
+
+        <div class="flow-divider"></div>
+
+        <h3
+          class="h6 text-uppercase text-muted mb-2"
+          style="letter-spacing: 0.18em"
+        >
+          Shipping
+        </h3>
+        <div class="small">
+          <div class="mb-1">
+            <strong>Name:</strong> <%= order.shippingName %>
+          </div>
+          <div class="mb-1">
+            <strong>Phone:</strong> <%= order.shippingPhone %>
+          </div>
+          <div class="mb-0">
+            <strong>Address:</strong> <%= order.shippingAddress %>
+          </div>
+          <% if (order.notes) { %>
+          <div class="mt-2"><strong>Notes:</strong> <%= order.notes %></div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

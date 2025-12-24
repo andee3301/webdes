@@ -19,8 +19,13 @@ exports.placeOrder = async (req, res) => {
     addFlash(req, 'error', 'Your cart is empty.');
     return res.redirect('/cart');
   }
-  const { shippingName, shippingAddress, shippingPhone, notes } = req.body;
+  const { shippingName, shippingAddress, shippingPhone, notes, paymentMethod } = req.body;
   const totalPrice = cart.reduce((sum, item) => sum + item.quantity * parseFloat(item.price), 0);
+
+  const normalizedPaymentMethod = paymentMethod === 'qr' ? 'qr' : 'cod';
+
+  // QR checkout flows to a dedicated payment screen; we only mark as shipped after user confirms payment.
+  const initialStatus = 'pending';
 
   let transaction;
   try {
@@ -28,7 +33,7 @@ exports.placeOrder = async (req, res) => {
     const order = await Order.create(
       {
         userId: req.user.id,
-        status: 'pending',
+        status: initialStatus,
         totalPrice,
         shippingName,
         shippingAddress,
@@ -55,7 +60,13 @@ exports.placeOrder = async (req, res) => {
 
     await transaction.commit();
     req.session.cart = [];
-    addFlash(req, 'success', 'Order placed successfully!');
+
+    if (normalizedPaymentMethod === 'qr') {
+      addFlash(req, 'info', 'Scan the QR code to pay, then confirm payment to start shipping.');
+      return res.redirect(`/checkout/qr/${order.id}`);
+    }
+
+    addFlash(req, 'success', 'Order placed successfully! Awaiting confirmation.');
     return res.redirect(`/orders/${order.id}`);
   } catch (error) {
     if (transaction) {
@@ -65,6 +76,49 @@ exports.placeOrder = async (req, res) => {
     addFlash(req, 'error', 'Unable to place order.');
     return res.redirect('/checkout');
   }
+};
+
+exports.qrPaymentPage = async (req, res) => {
+  const { id } = req.params;
+  const order = await Order.findOne({
+    where: { id, userId: req.user.id },
+    include: [
+      {
+        model: OrderItem,
+        as: 'items',
+        include: [{ model: MenuItem, as: 'menuItem' }],
+      },
+    ],
+  });
+
+  if (!order) {
+    addFlash(req, 'error', 'Order not found.');
+    return res.redirect('/orders');
+  }
+
+  return res.render('orders/qr-pay', { pageTitle: `Pay order #${order.id}`, order });
+};
+
+exports.confirmQrPayment = async (req, res) => {
+  const { id } = req.params;
+  const order = await Order.findOne({ where: { id, userId: req.user.id } });
+  if (!order) {
+    addFlash(req, 'error', 'Order not found.');
+    return res.redirect('/orders');
+  }
+
+  if (order.status === 'completed' || order.status === 'cancelled') {
+    addFlash(req, 'error', 'This order can no longer be updated.');
+    return res.redirect(`/orders/${order.id}`);
+  }
+
+  if (order.status !== 'shipped') {
+    order.status = 'shipped';
+    await order.save();
+  }
+
+  addFlash(req, 'success', 'Payment confirmed. Your order is now in shipping.');
+  return res.redirect(`/orders/${order.id}`);
 };
 
 exports.listOrders = async (req, res) => {

@@ -31,6 +31,13 @@ const main = () => {
   if (fs.existsSync(path.join(projectRoot, 'package-lock.json'))) {
     copy(path.join(projectRoot, 'package-lock.json'), path.join(tempDir, 'package-lock.json'));
   }
+  const rootAssets = ['image.png'];
+  rootAssets.forEach((asset) => {
+    const assetPath = path.join(projectRoot, asset);
+    if (fs.existsSync(assetPath)) {
+      copy(assetPath, path.join(tempDir, asset));
+    }
+  });
 
   console.log('Installing SPA deps in temp dir...');
   run('npm install', tempDir);

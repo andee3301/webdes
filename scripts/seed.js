@@ -5,6 +5,14 @@ const { sequelize, MenuItem, User } = require('../models');
 
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
+const slugify = (value) =>
+  value
+    .toString()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '')
+    .substring(0, 140);
+
 const beans = [
   {
     name: 'Ethiopia Yirgacheffe Chelbessa',
@@ -19,7 +27,7 @@ const beans = [
     elevation: '1,900–2,100m',
     tastingNotes: 'Bergamot|Jasmine|Honey',
     roastLevel: 'Light',
-    imageUrl: 'https://images.unsplash.com/photo-1459257868276-5e65389e2722?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0001-6c5a3a91.jpg',
   },
   {
     name: 'Ethiopia Guji Shakiso',
@@ -34,7 +42,7 @@ const beans = [
     elevation: '1,850–2,000m',
     tastingNotes: 'Peach|Mandarin|Chamomile',
     roastLevel: 'Light',
-    imageUrl: 'https://images.unsplash.com/photo-1503481766315-7a586b20f66d?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0002-2ed4d65c.jpg',
   },
   {
     name: 'Kenya Kirinyaga AA',
@@ -49,7 +57,7 @@ const beans = [
     elevation: '1,700–1,900m',
     tastingNotes: 'Blackcurrant|Grapefruit|Cane sugar',
     roastLevel: 'Light-Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1459257868276-5e65389e2722?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0003-f5a2222c.jpg',
   },
   {
     name: 'Kenya Nyeri Peaberry',
@@ -64,7 +72,7 @@ const beans = [
     elevation: '1,750–1,950m',
     tastingNotes: 'Blackberry|Cocoa nib|Red currant',
     roastLevel: 'Light-Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1525081905268-3e8d4492c07c?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0004-c24e907a.jpg',
   },
   {
     name: 'Colombia Huila Supremo',
@@ -79,7 +87,7 @@ const beans = [
     elevation: '1,600–1,850m',
     tastingNotes: 'Caramel|Orange|Almond',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1477764227722-856d8e5e3c9a?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0005-09d3e1b1.jpg',
   },
   {
     name: 'Colombia Pink Bourbon Honey',
@@ -94,7 +102,7 @@ const beans = [
     elevation: '1,700m',
     tastingNotes: 'Strawberry|Papaya|Honey',
     roastLevel: 'Light-Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0006-be0e0db0.jpg',
   },
   {
     name: 'Colombia Diego Bermudez Thermal',
@@ -109,7 +117,7 @@ const beans = [
     elevation: '1,700m',
     tastingNotes: 'Red fruit|Tropical|Florals',
     roastLevel: 'Light',
-    imageUrl: 'https://images.unsplash.com/photo-1510626176961-4b37d0b4e904?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0007-b1a635bb.jpg',
   },
   {
     name: 'Guatemala Huehuetenango',
@@ -124,7 +132,7 @@ const beans = [
     elevation: '1,600–1,900m',
     tastingNotes: 'Milk chocolate|Caramel|Orange zest',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1477764227722-856d8e5e3c9a?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0008-7b2fc1ae.jpg',
   },
   {
     name: 'Guatemala Acatenango Natural',
@@ -139,7 +147,7 @@ const beans = [
     elevation: '1,550–1,800m',
     tastingNotes: 'Berry jam|Cocoa|Praline',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0009-a3717674.jpg',
   },
   {
     name: 'Costa Rica Tarrazú Honey',
@@ -154,7 +162,7 @@ const beans = [
     elevation: '1,700m',
     tastingNotes: 'Toffee|Mandarin|Red apple',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0010-52e74dd2.jpg',
   },
   {
     name: 'Panama Boquete Geisha',
@@ -169,7 +177,7 @@ const beans = [
     elevation: '1,800m',
     tastingNotes: 'Jasmine|Citrus|Honeydew',
     roastLevel: 'Light',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0011-2956a5ff.jpg',
   },
   {
     name: 'Brazil Cerrado Natural',
@@ -184,7 +192,7 @@ const beans = [
     elevation: '1,100m',
     tastingNotes: 'Hazelnut|Cocoa|Brown sugar',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0012-d9c9ba2d.jpg',
   },
   {
     name: 'Brazil Sul de Minas Pulped',
@@ -199,7 +207,7 @@ const beans = [
     elevation: '1,150m',
     tastingNotes: 'Caramel|Red apple|Almond',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1477764227722-856d8e5e3c9a?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0013-274800d9.jpg',
   },
   {
     name: 'Peru Cajamarca Washed',
@@ -214,7 +222,7 @@ const beans = [
     elevation: '1,700–1,900m',
     tastingNotes: 'Panela|Lime|Cocoa',
     roastLevel: 'Light-Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0014-4a30aa24.jpg',
   },
   {
     name: 'Peru Cusco Honey',
@@ -229,7 +237,7 @@ const beans = [
     elevation: '1,750m',
     tastingNotes: 'Dried fruit|Sugarcane|Cocoa nib',
     roastLevel: 'Light-Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0015-a4d1ac38.jpg',
   },
   {
     name: 'Rwanda Nyamasheke',
@@ -244,7 +252,7 @@ const beans = [
     elevation: '1,700–1,900m',
     tastingNotes: 'Mandarin|Black tea|Brown sugar',
     roastLevel: 'Light-Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1477764227722-856d8e5e3c9a?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0016-d09acf90.jpg',
   },
   {
     name: 'Burundi Kayanza Honey',
@@ -259,7 +267,7 @@ const beans = [
     elevation: '1,700m',
     tastingNotes: 'Raspberry|Caramel|Black tea',
     roastLevel: 'Light-Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0017-ef806bb9.jpg',
   },
   {
     name: 'Uganda Mt. Elgon',
@@ -274,7 +282,7 @@ const beans = [
     elevation: '1,800m',
     tastingNotes: 'Plum|Molasses|Cocoa',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1477764227722-856d8e5e3c9a?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0018-2faf6914.jpg',
   },
   {
     name: 'Tanzania Kilimanjaro',
@@ -289,7 +297,7 @@ const beans = [
     elevation: '1,600m',
     tastingNotes: 'Orange|Cinnamon|Cocoa',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0019-5a777e2e.jpg',
   },
   {
     name: 'Nicaragua Jinotega',
@@ -304,7 +312,7 @@ const beans = [
     elevation: '1,400–1,600m',
     tastingNotes: 'Cocoa|Toasted nut|Mild citrus',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0020-28bcb732.jpg',
   },
   {
     name: 'El Salvador Santa Ana',
@@ -319,7 +327,7 @@ const beans = [
     elevation: '1,500m',
     tastingNotes: 'Caramel|Orange|Milk chocolate',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0021-95d74824.jpg',
   },
   {
     name: 'Honduras Copán Honey',
@@ -334,7 +342,7 @@ const beans = [
     elevation: '1,450m',
     tastingNotes: 'Pineapple|Brown sugar|Cocoa',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0022-f2c826e6.jpg',
   },
   {
     name: 'Mexico Chiapas',
@@ -349,7 +357,7 @@ const beans = [
     elevation: '1,400m',
     tastingNotes: 'Dark chocolate|Almond|Orange peel',
     roastLevel: 'Medium-Dark',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0023-6e419195.jpg',
   },
   {
     name: 'Indonesia Sumatra Lintong',
@@ -364,7 +372,7 @@ const beans = [
     elevation: '1,400m',
     tastingNotes: 'Cedar|Cocoa|Sweet spice',
     roastLevel: 'Medium-Dark',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0024-d590f9d5.jpg',
   },
   {
     name: 'Indonesia Java Honey',
@@ -379,7 +387,7 @@ const beans = [
     elevation: '1,300m',
     tastingNotes: 'Molasses|Dried plum|Sweet spice',
     roastLevel: 'Medium-Dark',
-    imageUrl: 'https://images.unsplash.com/photo-1477764227722-856d8e5e3c9a?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0025-b29db6dd.jpg',
   },
   {
     name: 'Vietnam Lam Dong Honey',
@@ -394,7 +402,7 @@ const beans = [
     elevation: '1,500m',
     tastingNotes: 'Palm sugar|Ripe mango|Cocoa',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1477764227722-856d8e5e3c9a?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0026-3186c7c5.jpg',
   },
   {
     name: 'Vietnam Da Lat Washed',
@@ -409,7 +417,7 @@ const beans = [
     elevation: '1,500m',
     tastingNotes: 'Floral|Caramel|Stone fruit',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1477764227722-856d8e5e3c9a?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0027-667394ab.jpg',
   },
   {
     name: 'Yemen Mokha Matari',
@@ -424,7 +432,7 @@ const beans = [
     elevation: '1,900m',
     tastingNotes: 'Cocoa|Dried berry|Winey',
     roastLevel: 'Medium-Dark',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0028-cf7888cd.jpg',
   },
   {
     name: 'Decaf Mountain Water',
@@ -439,14 +447,20 @@ const beans = [
     elevation: '1,400m',
     tastingNotes: 'Cocoa|Almond|Brown sugar',
     roastLevel: 'Medium',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: '/images/stock/coffee-0029-13ed933f.jpg',
   },
 ];
+
+const preparedBeans = beans.map((bean) => ({
+  ...bean,
+  slug: slugify(bean.name),
+  flavorTags: bean.flavorTags || bean.tastingNotes,
+}));
 
 const seed = async () => {
   try {
     await sequelize.sync({ force: true });
-    await MenuItem.bulkCreate(beans);
+    await MenuItem.bulkCreate(preparedBeans, { validate: true });
     const adminPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'Admin123!', 10);
     await User.create({
       name: 'Admin',
@@ -454,7 +468,14 @@ const seed = async () => {
       passwordHash: adminPassword,
       role: 'admin',
     });
-    console.log(`✅ Seeded ${beans.length} specialty coffees and an admin user.`);
+    const userPassword = await bcrypt.hash('1234', 10);
+    await User.create({
+      name: 'User',
+      email: 'user@123.com',
+      passwordHash: userPassword,
+      role: 'customer',
+    });
+    console.log(`✅ Seeded ${preparedBeans.length} specialty coffees, an admin user, and a regular user.`);
   } catch (error) {
     console.error('❌ Failed to seed beans:', error.message);
   } finally {

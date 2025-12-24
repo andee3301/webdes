@@ -1,38 +1,137 @@
 <%- include('../partials/header') %>
-<section class="row g-4">
+<section class="invoice-hero mb-4">
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
+    <div>
+      <p class="kicker mb-2">Orders</p>
+      <h1 class="h3 mb-1">Invoice</h1>
+      <p class="text-muted mb-0">
+        Order #<%= order.id %> · Placed <%= new
+        Date(order.createdAt).toLocaleString() %>
+      </p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-outline-secondary" href="/orders">Back</a>
+      <button
+        class="btn btn-outline-secondary"
+        type="button"
+        onclick="window.print()"
+      >
+        Print / Save
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="row g-4 align-items-start">
   <div class="col-lg-7">
-    <h1 class="h4 mb-1">Invoice</h1>
-    <p class="text-muted mb-3">Order #<%= order.id %></p>
-    <div class="card shadow-sm mb-3">
+    <div class="card shadow-sm flow-card">
       <div class="card-body">
-        <p class="mb-1"><strong>Status:</strong> <span class="badge bg-secondary text-uppercase"><%= order.status %></span></p>
-        <p class="mb-1"><strong>Placed:</strong> <%= new Date(order.createdAt).toLocaleString() %></p>
-        <p class="mb-1"><strong>Name:</strong> <%= order.shippingName %></p>
-        <p class="mb-1"><strong>Phone:</strong> <%= order.shippingPhone %></p>
-        <p class="mb-1"><strong>Address:</strong> <%= order.shippingAddress %></p>
-        <% if (order.notes) { %>
-        <p class="mb-0"><strong>Notes:</strong> <%= order.notes %></p>
-        <% } %>
-        <div class="d-flex justify-content-end mt-3">
-          <button class="btn btn-outline-secondary btn-sm" type="button" onclick="window.print()">Print / Save</button>
+        <div
+          class="d-flex align-items-center justify-content-between flex-wrap gap-2"
+        >
+          <h2 class="h5 mb-0">Status</h2>
+          <span
+            class="badge text-uppercase <%= orderStatusBadgeClass(order.status) %>"
+            ><%= orderStatusLabel(order.status) %></span
+          >
+        </div>
+
+        <div class="flow-divider"></div>
+
+        <div class="invoice-track">
+          <div
+            class="invoice-track__step <%= order.status === 'pending' || order.status === 'confirmed' || order.status === 'shipped' || order.status === 'completed' ? 'is-on' : '' %>"
+          >
+            <div class="invoice-track__dot"></div>
+            <div>
+              <div class="fw-semibold">Pending</div>
+              <div class="small text-muted">We received your order.</div>
+            </div>
+          </div>
+          <div
+            class="invoice-track__step <%= order.status === 'confirmed' || order.status === 'shipped' || order.status === 'completed' ? 'is-on' : '' %>"
+          >
+            <div class="invoice-track__dot"></div>
+            <div>
+              <div class="fw-semibold">Confirmed</div>
+              <div class="small text-muted">
+                Roasters are preparing your items.
+              </div>
+            </div>
+          </div>
+          <div
+            class="invoice-track__step <%= order.status === 'shipped' || order.status === 'completed' ? 'is-on' : '' %>"
+          >
+            <div class="invoice-track__dot"></div>
+            <div>
+              <div class="fw-semibold">In shipping</div>
+              <div class="small text-muted">Your order is on the way.</div>
+            </div>
+          </div>
+          <div
+            class="invoice-track__step <%= order.status === 'completed' ? 'is-on' : '' %>"
+          >
+            <div class="invoice-track__dot"></div>
+            <div>
+              <div class="fw-semibold">Completed</div>
+              <div class="small text-muted">Delivered and completed.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm flow-card mt-4">
+      <div class="card-body">
+        <h2 class="h5 mb-0">Shipping</h2>
+        <div class="flow-divider"></div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="small text-muted">Name</div>
+            <div class="fw-semibold"><%= order.shippingName %></div>
+          </div>
+          <div class="col-md-6">
+            <div class="small text-muted">Phone</div>
+            <div class="fw-semibold"><%= order.shippingPhone %></div>
+          </div>
+          <div class="col-12">
+            <div class="small text-muted">Address</div>
+            <div class="fw-semibold"><%= order.shippingAddress %></div>
+          </div>
+          <% if (order.notes) { %>
+          <div class="col-12">
+            <div class="small text-muted">Notes</div>
+            <div class="fw-semibold"><%= order.notes %></div>
+          </div>
+          <% } %>
         </div>
       </div>
     </div>
   </div>
+
   <div class="col-lg-5">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm flow-card">
       <div class="card-body">
-        <h2 class="h5">Items</h2>
-        <ul class="list-group list-group-flush">
+        <h2 class="h5 mb-0">Items</h2>
+        <div class="flow-divider"></div>
+        <div class="invoice-items">
           <% order.items.forEach((item) => { %>
-          <li class="list-group-item d-flex justify-content-between">
-            <span><%= item.menuItem?.name %> × <%= item.quantity %></span>
-            <span>$<%= Number(item.subtotal).toFixed(2) %></span>
-          </li>
+          <div class="invoice-item">
+            <div class="invoice-item__meta">
+              <div class="invoice-item__name"><%= item.menuItem?.name %></div>
+              <div class="small text-muted">Qty <%= item.quantity %></div>
+            </div>
+            <div class="invoice-item__price">
+              $<%= Number(item.subtotal).toFixed(2) %>
+            </div>
+          </div>
           <% }); %>
-        </ul>
-        <div class="d-flex justify-content-between mt-3">
-          <span>Total</span>
+        </div>
+
+        <div class="flow-divider"></div>
+
+        <div class="d-flex justify-content-between">
+          <span class="text-muted">Total</span>
           <strong>$<%= Number(order.totalPrice).toFixed(2) %></strong>
         </div>
       </div>

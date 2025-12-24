@@ -14,6 +14,14 @@
       <span class="fs-4 fw-bold">$<%= parseFloat(item.price).toFixed(2) %></span>
       <% if (!item.isAvailable) { %>
       <span class="badge bg-secondary">Unavailable</span>
+      <% } else if (item.stock !== null && item.stock !== undefined) { %>
+        <% if (item.stock === 0) { %>
+        <span class="badge bg-danger">Out of stock</span>
+        <% } else if (item.stock < 10) { %>
+        <span class="badge bg-warning text-dark">Only <%= item.stock %> left</span>
+        <% } else { %>
+        <span class="badge bg-success">In stock</span>
+        <% } %>
       <% } %>
     </div>
     <% if (avgRating) { %>
@@ -23,9 +31,14 @@
     <% } %>
     <div class="d-flex gap-2 align-items-center mb-4">
       <form action="/cart/add/<%= item.id %>" method="POST" class="d-flex gap-2">
-        <input class="form-control" style="width: 120px" type="number" name="quantity" min="1" value="1" />
-        <button class="btn btn-primary" type="submit" <%= item.isAvailable ? '' : 'disabled' %>>
-          Add to cart
+        <input class="form-control" style="width: 120px" type="number" name="quantity" min="1" 
+          <% if (item.stock !== null && item.stock !== undefined) { %>
+            max="<%= item.stock %>"
+          <% } %>
+          value="1" />
+        <button class="btn btn-primary" type="submit" 
+          <%= (item.isAvailable && (item.stock === null || item.stock === undefined || item.stock > 0)) ? '' : 'disabled' %>>
+          <%= (item.stock === 0) ? 'Out of stock' : 'Add to cart' %>
         </button>
       </form>
       <% if (user) { %>

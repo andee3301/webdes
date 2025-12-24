@@ -1,5 +1,4 @@
 <%- include('../partials/header') %>
-<div class="page-shell">
 <section class="shop-hero rounded-4 p-4 p-md-5 mb-4">
   <div class="shop-hero-grid">
     <div>
@@ -159,7 +158,7 @@
             <% }); %>
           </div>
           <% } %>
-          <p class="text-muted mb-3"><%= item.description || 'Hand-roasted coffee designed for calm mornings.' %></p>
+          <p class="coffee-card-desc text-muted mb-3"><%= item.description || 'Hand-roasted coffee designed for calm mornings.' %></p>
           <div class="coffee-card-footer">
             <div>
               <p class="price mb-0">
@@ -213,5 +212,4 @@
   <a class="btn btn-primary" href="/about">Learn about our sourcing</a>
 </section>
 <% } %>
-</div>
 <%- include('../partials/footer') %>

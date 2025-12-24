@@ -2,7 +2,9 @@
 <section class="d-flex justify-content-between align-items-center mb-3">
   <div>
     <h1 class="h4 mb-0">Menu items</h1>
-    <p class="text-muted mb-0">Update the products available on the storefront.</p>
+    <p class="text-muted mb-0">
+      Update the products available on the storefront.
+    </p>
   </div>
   <a class="btn btn-primary" href="/admin/menu-items/new">Add item</a>
 </section>
@@ -14,6 +16,7 @@
         <th>Name</th>
         <th>Category</th>
         <th>Price</th>
+        <th>Stock</th>
         <th>Status</th>
         <th></th>
       </tr>
@@ -21,13 +24,24 @@
     <tbody>
       <% if (!items.length) { %>
       <tr>
-        <td colspan="5" class="text-center text-muted">No menu items yet.</td>
+        <td colspan="6" class="text-center text-muted">No menu items yet.</td>
       </tr>
       <% } %> <% items.forEach((item) => { %>
       <tr>
         <td><%= item.name %></td>
         <td class="text-capitalize"><%= item.category || '—' %></td>
         <td>$<%= parseFloat(item.price).toFixed(2) %></td>
+        <td>
+          <% if (item.stock === null || item.stock === undefined) { %>
+          <span class="text-muted">Unlimited</span>
+          <% } else if (item.stock === 0) { %>
+          <span class="badge bg-danger">Out of stock</span>
+          <% } else if (item.stock < 10) { %>
+          <span class="badge bg-warning text-dark"><%= item.stock %> left</span>
+          <% } else { %>
+          <span class="badge bg-info"><%= item.stock %> in stock</span>
+          <% } %>
+        </td>
         <td>
           <% if (item.isAvailable) { %>
           <span class="badge bg-success">Available</span>
@@ -36,9 +50,19 @@
           <% } %>
         </td>
         <td class="text-end">
-          <a class="btn btn-sm btn-outline-primary" href="/admin/menu-items/<%= item.id %>/edit">Edit</a>
-          <form action="/admin/menu-items/<%= item.id %>/delete" method="POST" class="d-inline">
-            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+          <a
+            class="btn btn-sm btn-outline-primary"
+            href="/admin/menu-items/<%= item.id %>/edit"
+            >Edit</a
+          >
+          <form
+            action="/admin/menu-items/<%= item.id %>/delete"
+            method="POST"
+            class="d-inline"
+          >
+            <button class="btn btn-sm btn-outline-danger" type="submit">
+              Delete
+            </button>
           </form>
         </td>
       </tr>

@@ -7,7 +7,9 @@
     </div>
   </div>
   <% if (!orders.length) { %>
-  <div class="alert alert-light border">No orders yet. Grab something from the menu!</div>
+  <div class="alert alert-light border">
+    No orders yet. Grab something from the menu!
+  </div>
   <% } else { %>
   <div class="table-responsive shadow-sm">
     <table class="table table-striped align-middle mb-0">
@@ -24,10 +26,22 @@
         <% orders.forEach((order) => { %>
         <tr>
           <td>#<%= order.id %></td>
-          <td><span class="badge bg-secondary text-uppercase"><%= order.status %></span></td>
+          <td>
+            <span
+              class="badge text-uppercase <%= orderStatusBadgeClass(order.status) %>"
+            >
+              <%= orderStatusLabel(order.status) %>
+            </span>
+          </td>
           <td>$<%= parseFloat(order.totalPrice).toFixed(2) %></td>
           <td><%= new Date(order.createdAt).toLocaleString() %></td>
-          <td><a class="btn btn-sm btn-outline-primary" href="/orders/<%= order.id %>">Details</a></td>
+          <td>
+            <a
+              class="btn btn-sm btn-outline-primary"
+              href="/orders/<%= order.id %>"
+              >Details</a
+            >
+          </td>
         </tr>
         <% }); %>
       </tbody>

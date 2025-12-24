@@ -13,76 +13,95 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/main.css" />
   </head>
   <body class="site-body d-flex flex-column min-vh-100">
-    <header class="brand-nav border-bottom">
+    <header class="brand-nav">
       <div class="page-frame">
-        <nav class="navbar navbar-expand-lg py-3">
-          <a class="navbar-brand fw-bold brand-mark" href="/"
-            >Andy Roasting Co.</a
+        <div
+          class="nav-inner"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.9rem 0;
+          "
+        >
+          <a
+            class="brand-mark"
+            href="/"
+            style="
+              font-family: 'Cormorant Garamond', serif;
+              font-size: 1.4rem;
+              font-weight: 700;
+              color: var(--roast-brown);
+              text-decoration: none;
+            "
           >
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#primaryNav"
-            aria-controls="primaryNav"
-            aria-expanded="false"
+            Andy Roasting Co.
+          </a>
+          <nav
+            class="nav-links"
+            style="
+              display: flex;
+              gap: 1rem;
+              font-weight: 600;
+              color: var(--muted-ink);
+            "
           >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="primaryNav">
-            <ul
-              class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-3"
+            <a href="/shop" style="text-decoration: none; color: inherit"
+              >Shop</a
             >
-              <li class="nav-item">
-                <a class="nav-link" href="/menu">Menu</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/shop">Shop</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/about">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/journal">Journal</a>
-              </li>
-              <% if (user) { %>
-              <li class="nav-item">
-                <a class="nav-link" href="/wishlist">Wishlist</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/orders">Orders</a>
-              </li>
-              <% } %>
-            </ul>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-              <a class="btn btn-light btn-sm" href="/cart">
-                Cart <% if (cartCount > 0) { %>
-                <span class="badge bg-primary ms-1"> <%= cartCount %> </span>
-                <% } %>
-              </a>
-              <% if (user && user.role === 'admin') { %>
-              <a class="btn btn-outline-secondary btn-sm" href="/admin"
-                >Admin</a
+            <a href="/about" style="text-decoration: none; color: inherit"
+              >About</a
+            >
+            <a href="/journal" style="text-decoration: none; color: inherit"
+              >Journal</a
+            >
+            <% if (user) { %>
+            <a href="/wishlist" style="text-decoration: none; color: inherit"
+              >Wishlist</a
+            >
+            <a href="/orders" style="text-decoration: none; color: inherit"
+              >Orders</a
+            >
+            <% } %>
+          </nav>
+          <div
+            class="nav-actions"
+            style="display: flex; align-items: center; gap: 0.6rem"
+          >
+            <a
+              class="btn btn-light btn-sm"
+              href="/cart"
+              style="display: inline-flex; align-items: center; gap: 0.4rem"
+            >
+              Cart <% if (cartCount > 0) { %>
+              <span class="badge rounded-pill ms-1 bg-warning text-dark"
+                ><%= cartCount %></span
               >
-              <% } %> <% if (user) { %>
-              <span class="text-muted small">Hi, <%= user.name %></span>
-              <form action="/logout" method="POST" class="d-inline">
-                <button class="btn btn-link btn-sm px-0">Logout</button>
-              </form>
-              <% } else { %>
-              <a class="btn btn-link btn-sm" href="/login">Login</a>
-              <a class="btn btn-primary btn-sm" href="/register">Join</a>
               <% } %>
-            </div>
+            </a>
+            <% if (user) { %> <% if (user.role === 'admin') { %>
+            <a class="btn btn-outline-secondary btn-sm" href="/admin">Admin</a>
+            <% } %>
+            <a class="btn btn-primary btn-sm" href="/orders">Account</a>
+            <form action="/logout" method="POST" class="d-inline">
+              <button class="btn btn-outline-secondary btn-sm" type="submit">
+                Logout
+              </button>
+            </form>
+            <% } else { %>
+            <a class="btn btn-primary btn-sm" href="/login">Account</a>
+            <% } %>
           </div>
-        </nav>
+        </div>
       </div>
     </header>
+
     <main class="page-shell flex-grow-1 py-4 py-md-5">
       <% if (flash && flash.length) { %>
-      <div class="mb-3">
+      <div class="mb-4">
         <% flash.forEach((msg) => { %>
         <div
           class="alert alert-<%= msg.type === 'error' ? 'danger' : msg.type === 'info' ? 'info' : 'success' %> alert-dismissible fade show"
@@ -98,6 +117,8 @@
         <% }); %>
       </div>
       <% } %>
+
+      <div class="page-content"></div>
     </main>
   </body>
 </html>

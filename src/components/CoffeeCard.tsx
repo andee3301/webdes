@@ -24,7 +24,7 @@ export function CoffeeCard({
 }: CoffeeCardProps) {
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-      <div className="relative h-64 overflow-hidden bg-neutral-100">
+      <div className="relative landing-card-media overflow-hidden bg-neutral-100">
         <ImageWithFallback
           src={image}
           alt={`${name} coffee from ${origin}`}

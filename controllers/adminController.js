@@ -63,6 +63,7 @@ exports.createMenuItem = async (req, res) => {
     roastLevel,
     flavorTags,
     isAvailable,
+    stock,
   } = req.body;
   try {
     await MenuItem.create({
@@ -81,6 +82,7 @@ exports.createMenuItem = async (req, res) => {
       roastLevel,
       flavorTags,
       isAvailable: typeof isAvailable !== 'undefined',
+      stock: stock && stock !== '' ? parseInt(stock, 10) : null,
     });
     addFlash(req, 'success', 'Menu item created.');
     res.redirect('/admin/menu-items');
@@ -118,6 +120,7 @@ exports.updateMenuItem = async (req, res) => {
     roastLevel,
     flavorTags,
     isAvailable,
+    stock,
   } = req.body;
   try {
     const item = await MenuItem.findByPk(id);
@@ -141,6 +144,7 @@ exports.updateMenuItem = async (req, res) => {
       roastLevel,
       flavorTags,
       isAvailable: typeof isAvailable !== 'undefined',
+      stock: stock && stock !== '' ? parseInt(stock, 10) : null,
     });
     addFlash(req, 'success', 'Menu item updated.');
      res.redirect('/admin/menu-items');

@@ -15,6 +15,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const shopRoutes = require('./routes/shopRoutes');
 const pageRoutes = require('./routes/pageRoutes');
 const apiAuthRoutes = require('./routes/apiAuthRoutes');
+const apiMenuRoutes = require('./routes/apiMenuRoutes');
 const { requireAdmin, attachUser } = require('./middleware/auth');
 
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -50,11 +51,25 @@ app.use((req, res, next) => {
   res.locals.cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   res.locals.flash = req.session.flash || [];
   delete req.session.flash;
+
+  const orderStatusMeta = {
+    pending: { label: 'Pending', badgeClass: 'bg-secondary' },
+    confirmed: { label: 'Confirmed', badgeClass: 'bg-info text-dark' },
+    shipped: { label: 'In shipping', badgeClass: 'bg-primary' },
+    completed: { label: 'Completed', badgeClass: 'bg-success' },
+    cancelled: { label: 'Cancelled', badgeClass: 'bg-danger' },
+  };
+
+  res.locals.orderStatusLabel = (status) => orderStatusMeta?.[status]?.label || status || 'Unknown';
+  res.locals.orderStatusBadgeClass = (status) =>
+    orderStatusMeta?.[status]?.badgeClass || 'bg-secondary';
+
   next();
 });
 
 app.use('/', authRoutes);
 app.use('/api/auth', apiAuthRoutes);
+app.use('/api/menu', apiMenuRoutes);
 app.use('/menu', menuRoutes);
 app.use('/shop', shopRoutes);
 app.use('/', pageRoutes);
@@ -86,7 +101,10 @@ const start = async () => {
       console.log(`☕ Coffee shop app running at http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Failed to start application:', error.message);
+    console.error('❌ Failed to start application:', error?.message || error);
+    if (error?.stack) {
+      console.error(error.stack);
+    }
     process.exit(1);
   }
 };

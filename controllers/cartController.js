@@ -28,6 +28,25 @@ exports.addToCart = async (req, res) => {
       addFlash(req, 'error', 'That item is not available.');
       return res.redirect(req.get('referer') || '/menu');
     }
+    
+    // Check stock availability
+    if (item.stock !== null && item.stock !== undefined) {
+      const cart = ensureCart(req);
+      const existingIndex = findCartItemIndex(cart, menuItemId);
+      const currentCartQuantity = existingIndex >= 0 ? cart[existingIndex].quantity : 0;
+      const totalQuantity = currentCartQuantity + quantity;
+      
+      if (item.stock === 0) {
+        addFlash(req, 'error', `${item.name} is out of stock.`);
+        return res.redirect(req.get('referer') || '/menu');
+      }
+      
+      if (totalQuantity > item.stock) {
+        addFlash(req, 'error', `Only ${item.stock} ${item.name} available. You already have ${currentCartQuantity} in cart.`);
+        return res.redirect(req.get('referer') || '/menu');
+      }
+    }
+    
     const cart = ensureCart(req);
     const existingIndex = findCartItemIndex(cart, menuItemId);
     if (existingIndex >= 0) {

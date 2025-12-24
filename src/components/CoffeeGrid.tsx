@@ -1,92 +1,126 @@
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import type { LandingMenuItem, UseLandingDataResult } from "../hooks/useLandingData";
 
-const coffees = [
-  {
-    name: "Yirgacheffe Dawn",
-    origin: "Ethiopia",
-    region: "Gedeo Zone",
-    notes: "Bergamot, Jasmine, Honey",
-    image: "https://images.unsplash.com/photo-1710752213640-aa9ed91a8646?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldGhpb3BpYW4lMjBjb2ZmZWV8ZW58MXx8fHwxNzYyNDIwMjU0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    price: "$22",
-  },
-  {
-    name: "Huila Sunset",
-    origin: "Colombia",
-    region: "Huila Department",
-    notes: "Caramel, Orange, Almond",
-    image: "https://images.unsplash.com/photo-1649616549847-d74c98f36edd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xvbWJpYSUyMGNvZmZlZSUyMGZhcm18ZW58MXx8fHwxNzYyNDk3NzY3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    price: "$20",
-  },
-  {
-    name: "Antigua Volcanic",
-    origin: "Guatemala",
-    region: "Antigua Valley",
-    notes: "Dark Chocolate, Spice, Cherry",
-    image: "https://images.unsplash.com/photo-1642613630414-1d9938f4fe02?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxndWF0ZW1hbGElMjBjb2ZmZWV8ZW58MXx8fHwxNzYyNDk3NzY4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    price: "$21",
-  },
-  {
-    name: "Nyeri Highlands",
-    origin: "Kenya",
-    region: "Nyeri County",
-    notes: "Blackcurrant, Tomato, Brown Sugar",
-    image: "https://images.unsplash.com/photo-1756121422046-8a3638d75efb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxrZW55YSUyMGNvZmZlZSUyMGNoZXJyaWVzfGVufDF8fHx8MTc2MjQ5Nzc2OHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    price: "$24",
-  },
-  {
-    name: "Brazil Cerrado",
-    origin: "Brazil",
-    region: "Minas Gerais",
-    notes: "Hazelnut, Cocoa, Caramel",
-    image: "https://images.unsplash.com/photo-1606152891041-3678607fb241?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcGVjaWFsdHklMjBjb2ZmZWUlMjBwb3VyfGVufDF8fHx8MTc2MjQ5Nzc2N3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    price: "$18",
-  },
-  {
-    name: "Sumatra Mandheling",
-    origin: "Indonesia",
-    region: "North Sumatra",
-    notes: "Cedar, Earth, Dark Chocolate",
-    image: "https://images.unsplash.com/photo-1626376010399-a82e5ce6de37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjByb2FzdGluZyUyMGJlYW5zfGVufDF8fHx8MTc2MjQ1MjI3M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    price: "$19",
-  },
-];
+interface CoffeeGridProps {
+  landing: UseLandingDataResult;
+}
 
-export function CoffeeGrid() {
+const formatPrice = (value?: number) => {
+  if (!Number.isFinite(value)) {
+    return "$0.00";
+  }
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(value as number);
+};
+
+const getFlavorTokens = (coffee: LandingMenuItem) => {
+  if (coffee.tastingNotes && coffee.tastingNotes.length) {
+    return coffee.tastingNotes;
+  }
+  if (coffee.flavorTags && coffee.flavorTags.length) {
+    return coffee.flavorTags;
+  }
+  return coffee.tags ?? [];
+};
+
+const renderSkeletonCards = () => (
+  <>
+    {[...Array(6)].map((_, index) => (
+      <div
+        key={`coffee-skeleton-${index}`}
+        className="group bg-white overflow-hidden border border-dashed border-neutral-200 animate-pulse"
+      >
+        <div className="h-96 bg-neutral-100" />
+        <div className="p-8 space-y-4">
+          <div className="h-6 bg-neutral-200 w-2/3" />
+          <div className="h-4 bg-neutral-200 w-1/3" />
+          <div className="h-4 bg-neutral-200 w-1/2" />
+          <div className="h-8 bg-neutral-100" />
+        </div>
+      </div>
+    ))}
+  </>
+);
+
+const regionLabel = (coffee: LandingMenuItem) => {
+  const parts = [coffee.region, coffee.originCountry].filter(Boolean);
+  return parts.join(", ") || coffee.category;
+};
+
+export function CoffeeGrid({ landing }: CoffeeGridProps) {
+  const coffees = landing.data?.highlightCoffees ?? [];
+
   return (
     <section id="shop" className="py-20 bg-neutral-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-5xl md:text-6xl mb-6">Our Current Selection</h2>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            Each coffee is carefully sourced from trusted farmers and roasted to highlight 
-            its unique characteristics.
+            Each coffee is sourced from the live menu and roasted to highlight its terroir.
           </p>
         </div>
-        
+
+        {landing.error && (
+          <div className="max-w-4xl mx-auto mb-10 border border-red-200 bg-red-50 text-red-700 px-6 py-4">
+            {landing.error}
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-12">
+          {landing.isLoading && coffees.length === 0 && renderSkeletonCards()}
+          {!landing.isLoading && coffees.length === 0 && !landing.error && (
+            <div className="col-span-full bg-white border border-dashed border-neutral-200 p-10 text-center text-neutral-500">
+              Our roasting schedule is being updated. Check back shortly for fresh releases.
+            </div>
+          )}
+
           {coffees.map((coffee) => (
-            <div key={coffee.name} className="group bg-white overflow-hidden cursor-pointer">
-              <div className="relative h-96 overflow-hidden bg-neutral-100">
+            <div
+              key={coffee.slug || coffee.id}
+              className="group bg-white overflow-hidden border border-neutral-200 hover:border-orange-600 transition-all"
+            >
+              <div className="relative landing-card-media overflow-hidden bg-neutral-100">
                 <ImageWithFallback
-                  src={coffee.image}
-                  alt={`${coffee.name} coffee`}
+                  src={coffee.imageUrl}
+                  alt={coffee.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-              </div>
-              
-              <div className="p-8">
-                <div className="mb-4">
-                  <h3 className="text-2xl mb-2">{coffee.name}</h3>
-                  <p className="text-neutral-600">{coffee.origin}</p>
-                  <p className="text-sm text-neutral-500">{coffee.region}</p>
+                <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 text-sm">
+                  {coffee.roast || coffee.roastLevel || "Seasonal Roast"}
                 </div>
-                
-                <p className="text-sm text-neutral-600 mb-4 italic">{coffee.notes}</p>
-                
+              </div>
+
+              <div className="p-8 space-y-4">
+                <div>
+                  <div className="flex items-center gap-2 text-sm text-neutral-500 mb-2">
+                    <span>{coffee.originBadge || coffee.originCountry || "Single origin"}</span>
+                  </div>
+                  <h3 className="text-2xl mb-1">{coffee.name}</h3>
+                  <p className="text-neutral-600">{regionLabel(coffee)}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {getFlavorTokens(coffee).slice(0, 4).map((note) => (
+                    <Badge key={`${coffee.slug}-${note}`} variant="outline" className="border-orange-200 text-orange-700">
+                      {note}
+                    </Badge>
+                  ))}
+                </div>
+
+                <p className="text-sm text-neutral-600 leading-relaxed">
+                  {coffee.description || "Hand-roasted to order for clarity and sweetness."}
+                </p>
+
                 <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
-                  <p className="text-2xl">{coffee.price}</p>
-                  <Button variant="outline" size="sm">Add to Cart</Button>
+                  <p className="text-2xl text-amber-900">{formatPrice(coffee.price)}</p>
+                  <Button variant="outline" size="sm" className="border-neutral-300 text-neutral-900">
+                    View Details
+                  </Button>
                 </div>
               </div>
             </div>
