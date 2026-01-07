@@ -5,7 +5,10 @@ const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', menuController.getHome);
+// Redirect /menu to /shop (shop is the only place to see all offers)
+router.get('/', (req, res) => res.redirect('/shop'));
+
+// Keep individual item detail pages at /menu/:id
 router.get('/:id', menuController.getMenuItem);
 router.post('/:id/reviews', requireAuth, reviewController.create);
 

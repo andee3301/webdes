@@ -121,8 +121,8 @@ function HeroSection({
             <a className="btn-primary" href="/shop">
               Shop live lots
             </a>
-            <a className="btn-ghost" href={heroFeature ? `/menu/${heroFeature.id}` : "/menu"}>
-              View menu
+            <a className="btn-ghost" href={heroFeature ? `/menu/${heroFeature.id}` : "/shop"}>
+              View featured
             </a>
           </div>
           <div className="stat-grid">
@@ -349,7 +349,6 @@ function Footer() {
           <div>
             <p className="eyebrow text-muted mb-2">Shop</p>
             <a href="/shop">All coffees</a>
-            <a href="/menu">Menu</a>
             <a href="/cart">Cart</a>
           </div>
           <div>
@@ -460,7 +459,7 @@ export default function App() {
         eyebrow="Pulled from the bar"
         title="Live selections pulled from our database"
         description="Updated from the espresso bar every morning so you can track each roast as it lands."
-        cta={{ label: "Browse menu", href: "/menu" }}
+        cta={{ label: "Browse all coffees", href: "/shop" }}
         items={highlightCoffees}
         isLoading={landing.isLoading}
         emptyMessage="Our roasting schedule is being updated. Check back shortly for fresh releases."

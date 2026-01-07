@@ -9,7 +9,6 @@ import {
 
 const primaryLinks = [
   { label: "Shop", href: "/shop" },
-  { label: "Menu", href: "/menu" },
   { label: "About", href: "/about" },
 ];
 

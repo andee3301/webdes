@@ -58,10 +58,9 @@ exports.login = async (req, res) => {
       return res.redirect('/login');
     }
     req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role };
-    const redirectTo = req.session.redirectTo || '/';
-    delete req.session.redirectTo;
+    delete req.session.redirectTo; // Clear any stored redirect
     addFlash(req, 'success', 'Logged in successfully.');
-    return res.redirect(redirectTo);
+    return res.redirect('/');
   } catch (error) {
     console.error('Login error', error);
     addFlash(req, 'error', 'Login failed. Please try again.');

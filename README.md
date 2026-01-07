@@ -1,25 +1,96 @@
- # Origin Reserve Coffee
+# Origin Reserve Coffee
 
-Simple ordering site for a specialty coffee roaster built with Express, Sequelize (MySQL/MariaDB), and EJS. Customers can browse the menu, manage a cart and wishlist, place orders, and leave reviews. Admin users can manage products, orders, and moderate reviews.
+A specialty coffee e-commerce site built with Express, Sequelize, EJS, and React.
 
-## Setup
+---
 
-1. Copy `.env.example` → `.env` (or create `.env`) with DB credentials and `SESSION_SECRET`.
-2. Install dependencies: `npm install`
-3. Seed sample data and an admin user: `npm run seed`
-4. Start the app: `npm run dev` (nodemon) or `npm start`
+## Installation
 
-Default admin credentials created by the seed:
-- Email: `admin@example.com`
-- Password: `Admin123!` (override via `ADMIN_PASSWORD` env var)
+### 1. Clone & Install
 
-Use `npm run seed` to reset the DB (it uses `sync({ force: true })`, so it will wipe existing data).
+```bash
+git clone https://github.com/andee3301/webdes.git
+cd webdes
+npm install
+```
 
-## Frontend SPA (Vite React)
+### 2. Create Database
 
-The Vite React landing is bundled into `public/landing` and served at `/`.
+```bash
+mysql -u root -p -e "CREATE DATABASE origin_reserve;"
+```
 
-1. Build the landing: `npm run build:spa` (builds in a temp dir to avoid path issues, copies output to `public/landing`).
-2. Start the server (`npm run dev` or `npm start`) and visit `http://localhost:3000/`.
-3. EJS pages remain for auth/cart/orders/admin flows; the SPA is the primary public face.
-  
+### 3. Configure Environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your MySQL credentials:
+
+```env
+DB_HOST=localhost
+DB_NAME=origin_reserve
+DB_USER=root
+DB_PASS=your_password
+DB_DIALECT=mysql
+SESSION_SECRET=any-random-string-here
+```
+
+### 4. Seed Database
+
+```bash
+npm run seed
+```
+
+> ⚠️ This wipes all data and creates fresh tables with demo content.
+
+### 5. Build Landing Page
+
+```bash
+npm run build:spa
+```
+
+### 6. Start Server
+
+```bash
+npm run dev
+```
+
+### 7. Open Browser
+
+Go to **http://localhost:3000**
+
+---
+
+## Demo Accounts
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@example.com` | `Admin123!` |
+| **Customer** | `john@test.com` | `1234` |
+| **Demo User** | `sarah.j@email.com` | `demo1234` |
+| **Demo User** | `mike.chen@email.com` | `demo1234` |
+| **Demo User** | `emma.w@email.com` | `demo1234` |
+
+---
+
+## Seed Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run seed` | Reset DB with 29 coffees, users & sample orders |
+| `npm run seed:beans` | Add 100 randomized coffee products |
+| `npm run seed:stock` | Reset menu stock levels |
+
+---
+
+## Quick Commands
+
+```bash
+npm run dev      # Start dev server (auto-reload)
+npm start        # Start production server
+npm run seed     # Reset database with demo data
+npm run build:spa # Build React landing page
+```
+

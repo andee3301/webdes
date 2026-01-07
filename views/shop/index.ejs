@@ -12,9 +12,7 @@
       </p>
       <div class="d-flex flex-wrap gap-3">
         <a class="btn btn-primary px-4" href="#coffee">Explore beans</a>
-        <a class="btn btn-outline-secondary px-4" href="/about"
-          >Behind the roast</a
-        >
+        <a class="btn btn-outline-secondary px-4" href="/about">Behind the roast</a>
       </div>
     </div>
     <div class="shop-hero-panel">
@@ -27,9 +25,7 @@
         <li class="shop-hero-note">Wishlist any coffee for later.</li>
       </ul>
       <div class="d-flex gap-2 flex-wrap">
-        <a class="btn btn-primary flex-grow-1" href="/cart"
-          >Cart (<%= cartCount %>)</a
-        >
+        <a class="btn btn-primary flex-grow-1" href="/cart">Cart (<%= cartCount %>)</a>
         <a class="btn btn-light flex-grow-1" href="/wishlist">Wishlist</a>
       </div>
     </div>
@@ -41,31 +37,17 @@
     <div class="row g-2 align-items-center">
       <div class="col-md-8">
         <label class="form-label text-muted">Search by flavor tags</label>
-        <input
-          class="form-control form-control-lg"
-          type="text"
-          name="q"
-          value="<%= activeQuery || '' %>"
-          placeholder="caramel, floral, bergamot..."
-        />
+        <input class="form-control form-control-lg" type="text" name="q" value="<%= activeQuery || '' %>" placeholder="caramel, floral, bergamot..." />
       </div>
       <div class="col-md-4 d-flex gap-2">
-        <button class="btn btn-primary flex-grow-1" type="submit">
-          Search
-        </button>
-        <% if (searchApplied) { %>
-        <a class="btn btn-outline-secondary" href="/shop">Clear</a>
-        <% } %>
+        <button class="btn btn-primary flex-grow-1" type="submit">Search</button>
+        <% if (searchApplied) { %><a class="btn btn-outline-secondary" href="/shop">Clear</a><% } %>
       </div>
     </div>
     <% if (searchApplied) { %>
-    <p class="small text-muted mt-2">
-      <%= searchCount %> coffees match "<%= activeQuery %>"
-    </p>
+    <p class="small text-muted mt-2"><%= searchCount %> coffees match "<%= activeQuery %>"</p>
     <% } else { %>
-    <p class="small text-muted mt-2">
-      Filter by tasting notes like caramel, bergamot, jasmine, smoke.
-    </p>
+    <p class="small text-muted mt-2">Filter by tasting notes like caramel, bergamot, jasmine, smoke.</p>
     <% } %>
   </form>
 </section>
@@ -91,18 +73,17 @@
 </section>
 
 <section class="shop-pills mb-5">
-  <% if (hasSections) { %> <% shopSections.forEach((section) => { %>
-  <a class="shop-pill" href="#<%= section.key %>"
-    ><span><%= section.title %></span></a
-  >
-  <% }); %> <% } else { %>
-  <span class="text-muted"
-    >We are roasting the next collection. Check back soon.</span
-  >
+  <% if (hasSections) { %>
+    <% shopSections.forEach((section) => { %>
+    <a class="shop-pill" href="#<%= section.key %>"><span><%= section.title %></span></a>
+    <% }); %>
+  <% } else { %>
+  <span class="text-muted">We are roasting the next collection. Check back soon.</span>
   <% } %>
 </section>
 
-<% if (hasSections) { %> <% shopSections.forEach((section) => { %>
+<% if (hasSections) { %>
+  <% shopSections.forEach((section) => { %>
 <section id="<%= section.key %>" class="shop-section mb-5">
   <div class="shop-section-header">
     <div>
@@ -112,22 +93,13 @@
     </div>
     <a class="btn btn-link" href="/about">Our sourcing</a>
   </div>
-  <% const placeholderImage =
-  'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80';
-  %>
+  <% var placeholderImage = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80'; %>
   <div class="row g-4">
     <% section.items.forEach((item) => { %>
     <div class="col-md-6 col-lg-4">
       <article class="coffee-card coffee-card--shop h-100">
-        <div
-          class="coffee-card-media <%= item.imageUrl ? '' : 'coffee-card-placeholder' %>"
-        >
-          <img
-            src="<%= item.imageUrl || placeholderImage %>"
-            alt="<%= item.name %>"
-            loading="lazy"
-            onerror="this.onerror=null;this.src='<%= placeholderImage %>';"
-          />
+        <div class="coffee-card-media <%= item.imageUrl ? '' : 'coffee-card-placeholder' %>">
+          <img src="<%= item.imageUrl || placeholderImage %>" alt="<%= item.name %>" loading="lazy" onerror="this.onerror=null;this.src='<%= placeholderImage %>';" />
         </div>
         <div class="coffee-card-body">
           <div class="coffee-card-header">
@@ -137,12 +109,8 @@
               <p class="flag-chip mb-0"><%= item.originBadge %></p>
               <% } %>
             </div>
-            <span class="badge bg-dark text-white text-uppercase"
-              ><%= item.displayRoast %></span
-            >
-            <span class="badge bg-light text-dark text-uppercase"
-              ><%= item.category || 'beans' %></span
-            >
+            <span class="badge bg-dark text-white text-uppercase"><%= item.displayRoast %></span>
+            <span class="badge bg-light text-dark text-uppercase"><%= item.category || 'beans' %></span>
           </div>
           <div class="coffee-meta">
             <div class="coffee-meta-block">
@@ -158,47 +126,32 @@
               <p class="mb-0 fw-semibold"><%= item.process || 'Washed' %></p>
             </div>
           </div>
-          <% const tags = item.tags && item.tags.length ? item.tags :
-          item.tagList; if (tags && tags.length) { %>
+          <% var tags = (item.tags && item.tags.length) ? item.tags : item.tagList; %>
+          <% if (tags && tags.length) { %>
           <div class="note-chips">
             <% tags.slice(0, 5).forEach((tag) => { %>
             <span class="note-chip"><%= tag %></span>
             <% }); %>
           </div>
           <% } %>
-          <p class="coffee-card-desc text-muted mb-3">
-            <%= item.description || 'Hand-roasted coffee designed for calm
-            mornings.' %>
-          </p>
+          <p class="coffee-card-desc text-muted mb-3"><%= item.description || 'Hand-roasted coffee designed for calm mornings.' %></p>
           <div class="coffee-card-footer">
             <div>
-              <p class="price mb-0">
-                $<%= parseFloat(item.price).toFixed(2) %>
-              </p>
+              <p class="price mb-0">$<%= parseFloat(item.price).toFixed(2) %></p>
               <small class="text-muted">250g bag · ships in 48h</small>
             </div>
             <div class="coffee-card-actions">
               <form action="/cart/add/<%= item.id %>" method="POST">
                 <input type="hidden" name="quantity" value="1" />
-                <button class="btn btn-primary btn-sm w-100" type="submit">
-                  Add to cart
-                </button>
+                <button class="btn btn-primary btn-sm w-100" type="submit">Add to cart</button>
               </form>
-              <a
-                class="btn btn-outline-secondary btn-sm w-100"
-                href="/menu/<%= item.id %>"
-                >Details</a
-              >
+              <a class="btn btn-outline-secondary btn-sm w-100" href="/menu/<%= item.id %>">Details</a>
               <% if (user) { %>
               <form action="/wishlist/<%= item.id %>/add" method="POST">
-                <button class="btn btn-light btn-sm w-100" type="submit">
-                  ♡ Wishlist
-                </button>
+                <button class="btn btn-light btn-sm w-100" type="submit">♡ Wishlist</button>
               </form>
               <% } else { %>
-              <a class="btn btn-link btn-sm w-100" href="/login"
-                >Login to save</a
-              >
+              <a class="btn btn-link btn-sm w-100" href="/login">Login to save</a>
               <% } %>
             </div>
           </div>
@@ -208,18 +161,17 @@
     <% }); %>
   </div>
 </section>
-<% }); %> <% } else { %>
+  <% }); %>
+<% } else { %>
 <section class="empty-shop rounded-4 p-5 text-center">
-  <p class="h4 mb-3">
-    <% if (searchApplied) { %>No coffees match "<%= activeQuery %>"<% } else {
-    %>New coffees are arriving soon.<% } %>
-  </p>
-  <p class="text-muted">
-    <% if (searchApplied) { %> Try another flavor word or
-    <a class="text-decoration-none" href="/shop">reset the filters</a>. <% }
-    else { %> Sign up for our newsletter or follow along on Instagram for drop
-    dates. <% } %>
-  </p>
+  <% if (searchApplied) { %>
+  <p class="h4 mb-3">No coffees match "<%= activeQuery %>"</p>
+  <p class="text-muted">Try another flavor word or <a class="text-decoration-none" href="/shop">reset the filters</a>.</p>
+  <% } else { %>
+  <p class="h4 mb-3">New coffees are arriving soon.</p>
+  <p class="text-muted">Sign up for our newsletter or follow along on Instagram for drop dates.</p>
+  <% } %>
   <a class="btn btn-primary" href="/about">Learn about our sourcing</a>
 </section>
-<% } %> <%- include('../partials/footer') %>
+<% } %>
+<%- include('../partials/footer') %>
